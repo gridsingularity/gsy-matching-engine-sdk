@@ -6,33 +6,40 @@
 #
 appdirs==1.4.4            # via virtualenv
 attrs==20.3.0             # via pytest
+bcrypt==3.2.0             # via paramiko
 behave==1.2.6             # via -r requirements/base.in
 certifi==2020.12.5        # via requests
+cffi==1.14.5              # via bcrypt, cryptography, pynacl
 chardet==3.0.4            # via requests
 click-default-group==1.2.2  # via -r requirements/base.in
 click==7.1.2              # via -r requirements/base.in, click-default-group, pip-tools
 colorlog==4.7.2           # via -r requirements/base.in
+cryptography==3.4.7       # via paramiko
 distlib==0.3.1            # via virtualenv
+fabric3==1.14.post1       # via -r requirements/base.in
 filelock==3.0.12          # via tox, virtualenv
 idna==2.10                # via requests
 iniconfig==1.1.1          # via pytest
 packaging==20.7           # via pytest, tox
 parameterized==0.7.4      # via -r requirements/base.in
+paramiko==2.7.2           # via fabric3
 parse-type==0.5.2         # via behave
 parse==1.18.0             # via behave, parse-type
 pip-tools==5.4.0          # via -r requirements/base.in
 pluggy==0.13.1            # via pytest, tox
-py==1.9.0                # via pytest, tox
+py==1.9.0                 # via pytest, tox
+pycparser==2.20           # via cffi
+pynacl==1.4.0             # via paramiko
 pyparsing==2.4.7          # via packaging
 pytest==6.1.2             # via -r requirements/base.in
 redis==3.5.3              # via -r requirements/base.in
 requests==2.25.0          # via -r requirements/base.in
-six==1.15.0               # via behave, parse-type, pip-tools, tox, virtualenv
+six==1.15.0               # via bcrypt, behave, fabric3, parse-type, pip-tools, pynacl, tox, virtualenv
 toml==0.10.2              # via pytest, tox
 tox==3.20.1               # via -r requirements/base.in
 urllib3==1.26.4           # via requests
 virtualenv==20.2.2        # via tox
-websockets==8.1         # via -r requirements/base.in
+websockets==8.1           # via -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:
 pip==20.3.1               # via -r requirements/base.in, pip-tools
