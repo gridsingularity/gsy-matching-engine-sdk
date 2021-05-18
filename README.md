@@ -1,1 +1,1 @@
-# myko-api-client
+# myco-api-client

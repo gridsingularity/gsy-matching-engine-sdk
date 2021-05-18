@@ -1,8 +1,8 @@
 import os
 from setuptools import setup, find_packages
-from myko_api_client import __version__
+from myco_api_client import __version__
 
-target_branch = os.environ.get('BRANCH', 'master')
+target_branch = os.environ.get('BRANCH', 'feature/D3ASIM-3447')
 
 
 try:
@@ -23,20 +23,20 @@ with open("README.md", "r") as readme:
 VERSION = __version__
 
 setup(
-    name="myko-api-client",
-    description="Myko API Client",
+    name="myco-api-client",
+    description="Myco API Client",
     long_description=README,
     author='GridSingularity',
     author_email='d3a@gridsingularity.com',
-    url='https://github.com/gridsingularity/myko-api-client',
+    url='https://github.com/gridsingularity/myco-api-client',
     version=VERSION,
     packages=find_packages(where=".", exclude=["tests"]),
-    package_dir={"myko_api_client": "myko_api_client"},
+    package_dir={"myco_api_client": "myco_api_client"},
     package_data={},
     install_requires=REQUIREMENTS,
     entry_points={
         'console_scripts': [
-            'myko = myko_api_client.cli:main',
+            'myco = myco_api_client.cli:main',
         ]
     },
     zip_safe=False,
