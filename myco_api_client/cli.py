@@ -31,13 +31,13 @@ from d3a_interface.utils import iterate_over_all_modules
 import myco_api_client.setups as setups
 from myco_api_client.constants import SETUP_FILE_PATH
 from myco_api_client.utils import (
-    simulation_id_from_env, domain_name_from_env,
+    job_uuid_from_env, domain_name_from_env,
     websocket_domain_name_from_env)
 
 log = getLogger(__name__)
 
 
-@click.group(name="d3a-api-client", cls=DefaultGroup, default="run", default_if_no_args=True,
+@click.group(name="myco-api-client", cls=DefaultGroup, default="run", default_if_no_args=True,
              context_settings={"max_content_width": 120})
 @click.option("-l", "--log-level", type=Choice(list(logging._nameToLevel.keys())), default="ERROR",
               show_default=True, help="Log level")
@@ -74,19 +74,21 @@ _setup_modules = iterate_over_all_modules(modules_path)
               type=str, help="D3A websocket URL")
 @click.option("-s", "--simulation-id", type=str, default=None,
               help="Simulation id")
+@click.option('--run-on-redis', is_flag=True, default=False,
+              help="Start the client using the Redis API")
 def run(base_setup_path, setup_module_name,
         username, password, domain_name,
-        web_socket, simulation_id):
+        web_socket, simulation_id, run_on_redis):
     if username is not None:
         os.environ["API_CLIENT_USERNAME"] = username
     if password is not None:
         os.environ["API_CLIENT_PASSWORD"] = password
-    os.environ["MYKO_CLIENT_DOMAIN_NAME"] = domain_name \
+    os.environ["MYCO_CLIENT_DOMAIN_NAME"] = domain_name \
         if domain_name else domain_name_from_env()
-    os.environ["MYKO_CLIENT_WEBSOCKET_DOMAIN_NAME"] = web_socket \
+    os.environ["MYCO_CLIENT_WEBSOCKET_DOMAIN_NAME"] = web_socket \
         if web_socket else websocket_domain_name_from_env()
-    os.environ["MYKO_CLIENT_SIMULATION_ID"] = simulation_id \
-        if simulation_id else simulation_id_from_env()
+    os.environ["MYCO_CLIENT_JOB_UUID"] = simulation_id \
+        if simulation_id else job_uuid_from_env()
     load_client_script(base_setup_path, setup_module_name)
 
 

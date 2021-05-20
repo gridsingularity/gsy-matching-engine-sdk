@@ -1,11 +1,11 @@
 import logging
 from time import sleep
 
-from myco_api_client.base_matcher import BaseMatcher
+from myco_api_client.redis_base_matcher import RedisBaseMatcher
 from myco_api_client.utils import perform_pay_as_bid_match
 
 
-class MycoMatcher(BaseMatcher):
+class MycoMatcher(RedisBaseMatcher):
     def __init__(self, *args, **kwargs):
         super(MycoMatcher, self).__init__(*args, **kwargs)
         self.finished = False
@@ -35,4 +35,4 @@ class MycoMatcher(BaseMatcher):
 matcher = MycoMatcher()
 
 while not matcher.finished:
-    sleep(0.5)
+    sleep(.5)
