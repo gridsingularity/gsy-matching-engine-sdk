@@ -3,7 +3,7 @@ from time import sleep
 
 from behave import given, when, then
 
-from myco_api_client.setups.redis_base_matcher_setup import RedisMycoMatcher
+from integration_tests.test_redis_myco_client import TestRedisMycoMatcher
 
 
 @given("redis container is started")
@@ -21,7 +21,7 @@ def step_impl(context, setup_file: str, d3a_options: str):
         d3a_options (str): options to be passed to the d3a run command. E.g.: "-t 1s -d 12h"
     """
     sleep(3)
-    system(f"docker run -d --name d3a-tests1 --env REDIS_URL=redis://redis.container:6379/ "
+    system(f"docker run -d --name d3a-tests --env REDIS_URL=redis://redis.container:6379/ "
            f"--net integtestnet d3a-tests -l INFO run --setup {setup_file} "
            f"--no-export --seed 0 --enable-external-connection {d3a_options} ")
 
@@ -29,7 +29,7 @@ def step_impl(context, setup_file: str, d3a_options: str):
 @when("the myco client is started with redis_base_matcher_setup")
 def step_impl(context):
     sleep(5)
-    context.matcher = RedisMycoMatcher()
+    context.matcher = TestRedisMycoMatcher()
     sleep(3)
     assert context.matcher.is_finished is False
 

@@ -28,6 +28,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
     def _set_job_uuid(self, payload):
         data = json.loads(payload["data"])
         self.job_uuid = data.get("job_uuid")
+        logging.debug(f"Received JOB UUID {self.job_uuid}")
 
     def _check_is_set_job_uuid(self):
         return self.job_uuid is not None
@@ -40,7 +41,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         if is_blocking:
             try:
                 wait_until_timeout_blocking(
-                    lambda: self._check_is_set_job_uuid()
+                    lambda: self._check_is_set_job_uuid(), timeout=50
                 )
             except AssertionError:
                 raise RedisAPIException(f'API registration process timed out.')
