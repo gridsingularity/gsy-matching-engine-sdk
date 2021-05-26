@@ -1,3 +1,4 @@
+import logging
 from concurrent.futures.thread import ThreadPoolExecutor
 
 from d3a_interface.client_connections.utils import (
@@ -28,13 +29,14 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
 
     def start_websocket_connection(self):
         self.dispatcher = WebsocketMessageReceiver(self)
-        websocket_uri = f"{self.websocket_domain_name}/{self.job_uuid}/"
+        websocket_uri = f"{self.websocket_domain_name}/{self.job_uuid}/myco/"
         self.websocket_thread = WebsocketThread(websocket_uri, self.domain_name,
                                                 self.dispatcher)
         self.websocket_thread.start()
         self.callback_thread = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
 
     def submit_matches(self, recommended_matches):
+        logging.debug(f"Sending recommendations {recommended_matches}")
         self._post_request(f"{self.url_prefix}/post_recommendations", recommended_matches)
 
     def request_orders(self, filters=None):
@@ -47,7 +49,7 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         recommendations = []
         self.submit_matches(recommendations)
 
-    def _on_matched_recommendations_response(self, data):
+    def _on_match(self, data):
         self.on_matched_recommendations_response(data)
 
     def on_matched_recommendations_response(self, data):

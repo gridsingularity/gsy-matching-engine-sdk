@@ -8,7 +8,7 @@ from myco_api_client.utils import perform_pay_as_bid_match
 class MycoMatcher(BaseMatcher):
     def __init__(self, *args, **kwargs):
         super(MycoMatcher, self).__init__(*args, **kwargs)
-        self.finished = False
+        self.is_finished = False
 
     def on_market_cycle(self, data):
         logging.info(f"Market Cycle")
@@ -23,7 +23,7 @@ class MycoMatcher(BaseMatcher):
         self.submit_matches(recommendations)
 
     def on_finish(self, data):
-        self.finished = True
+        self.is_finished = True
 
     def on_matched_recommendations_response(self, data):
         logging.info(f"Trades recommendations response returned {data}")
@@ -34,5 +34,5 @@ class MycoMatcher(BaseMatcher):
 
 matcher = MycoMatcher()
 
-while not matcher.finished:
+while not matcher.is_finished:
     sleep(0.5)

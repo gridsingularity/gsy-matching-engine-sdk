@@ -11,12 +11,17 @@ from myco_api_client.dataclasses import BidOfferMatch
 def sort_list_of_dicts_by_attribute(input_list: List[Dict],
                                     attribute: str,
                                     reverse_order=False):
-    """
-    Sorts a list of dicts by a given attribute
-    If reverse_order is True, the returned list will be sorted in descending order
+    """Sorts a list of dicts by a given attribute.
 
-    :return: List[Dict]
+    Args:
+        input_list: List[Dict]
+        attribute: attribute to sort against
+        reverse_order: if True, the returned list will be sorted in descending order
+
+    Returns: List[Dict]
+
     """
+
     return sorted(input_list,
                   key=lambda bid_offer: bid_offer.get(attribute),
                   reverse=reverse_order)
@@ -35,11 +40,14 @@ def job_uuid_from_env():
 
 
 def perform_pay_as_bid_match(market_offers_bids_list_mapping):
-    """
-    Performs pay as bid matching algorithm
-    :param market_offers_bids_list_mapping:
-    { "market_offers_bids_list_mapping": {market_uuid: {"offers": [...], "bids": [...]}}}
-    :return: List[BidOfferMatch.serializable_dict()]
+    """Performs pay as bid matching algorithm.
+
+    Args:
+        market_offers_bids_list_mapping:
+        { "market_offers_bids_list_mapping": {market_uuid: {"offers": [...], "bids": [...]}}}
+
+    Returns: List[BidOfferMatch.serializable_dict()]
+
     """
     bid_offer_pairs = []
     for market_id, data in market_offers_bids_list_mapping.items():

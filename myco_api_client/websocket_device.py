@@ -7,10 +7,13 @@ class WebsocketMessageReceiver:
         self.client = rest_client
 
     def _handle_event_message(self, message):
-        """
-        Available events: tick (wip), offers_bids_response, matched_recommendations_response (wip)
-        :param message:
-        :return:
+        """Available events: market, tick, finish, offers_bids_response, matched_recommendations_response.
+
+        Args:
+            message: Received websocket message
+
+        Returns: None
+
         """
         event = message.get("event")
         if event and hasattr(self.client, f"_on_{event}"):

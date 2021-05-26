@@ -5,10 +5,11 @@ from myco_api_client.redis_base_matcher import RedisBaseMatcher
 from myco_api_client.utils import perform_pay_as_bid_match
 
 
-class MycoMatcher(RedisBaseMatcher):
+class RedisMycoMatcher(RedisBaseMatcher):
     def __init__(self, *args, **kwargs):
-        super(MycoMatcher, self).__init__(*args, **kwargs)
-        self.finished = False
+        super(RedisMycoMatcher, self).__init__(*args, **kwargs)
+        self.is_finished = False
+        self.errors = 0
 
     def on_market_cycle(self, data):
         logging.info(f"Market Cycle")
@@ -23,7 +24,7 @@ class MycoMatcher(RedisBaseMatcher):
         self.submit_matches(recommendations)
 
     def on_finish(self, data):
-        self.finished = True
+        self.is_finished = True
 
     def on_matched_recommendations_response(self, data):
         logging.info(f"Trades recommendations response returned {data}")
@@ -32,7 +33,7 @@ class MycoMatcher(RedisBaseMatcher):
         logging.info(f"Event arrived {data}")
 
 
-matcher = MycoMatcher()
+matcher = RedisMycoMatcher()
 
-while not matcher.finished:
+while not matcher.is_finished:
     sleep(.5)
