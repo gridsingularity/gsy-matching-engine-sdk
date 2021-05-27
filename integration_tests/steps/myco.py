@@ -21,8 +21,8 @@ def step_impl(context, setup_file: str, d3a_options: str):
         d3a_options (str): options to be passed to the d3a run command. E.g.: "-t 1s -d 12h"
     """
     sleep(3)
-    system(f"docker run -d --name d3a-tests --env REDIS_URL=redis://redis.container:6379/ "
-           f"--net integtestnet d3a-tests -l INFO run --setup {setup_file} "
+    system(f"docker run -d --name d3a-tests1 --env REDIS_URL=redis://redis.container:6379/ "
+           f"--net integtestnet d3a-tests1 -l INFO run --setup {setup_file} "
            f"--no-export --seed 0 --enable-external-connection {d3a_options} ")
 
 
@@ -39,10 +39,17 @@ def step_impl(context):
     # Infinite loop in order to leave the client running on the background
     # placing bids and offers on every market cycle.
     # Should stop if an error occurs or if the simulation has finished
-    counter = 0  # Wait for five minutes at most
-    while context.matcher.errors == 0 and context.matcher.is_finished is False and counter < 60:
+    counter = 0
+    while context.matcher.errors == 0 and context.matcher.is_finished is False and counter < 90:
         sleep(3)
         counter += 3
+
+
+@then("all events handler are called")
+def step_impl(context):
+    # finish event is not called
+    assert context.matcher.called_events == {"market", "tick", "offers_bids_response",
+                                             "event_or_response", "finish"}
 
 
 @then("the myco client does not report errors")

@@ -6,3 +6,4 @@ Scenario: Myco Client connects to simulation
    When the myco client is started with redis_base_matcher_setup
    Then the myco client is connecting to the simulation until finished
    And the myco client does not report errors
+   And all events handler are called
