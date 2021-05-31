@@ -1,26 +1,25 @@
-name: myco-ci
-on:
-  pull_request:
-    branches:
-      - master
-      - staging
-jobs:
-  test-build:
-    runs-on: ubuntu-latest
+name: myco-api-client-CI
+ on:
+  pull_request
+
+ jobs:
+  build:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        python: [3.8]
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      env:
-        TOXENV: ci
-        BRANCH: master
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      run: |
-        export SOLC_BINARY=$HOME/solc/usr/bin/solc
-        export LD_LIBRARY_PATH=$HOME/solc/usr/lib:$LD_LIBRARY_PATH
-        pip install tox
-        tox -e $TOXENV --verbose
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install Tox
+        run: pip install tox
+      - name: Run Tox
+        run: tox -e $TOXENV
+        env:
+          TOXENV: ci
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
