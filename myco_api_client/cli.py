@@ -96,12 +96,8 @@ def load_client_script(base_setup_path, setup_module_name):
     try:
         if base_setup_path is None:
             importlib.import_module(f"myco_api_client.setups.{setup_module_name}")
-        elif base_setup_path and os.path.isabs(base_setup_path):
-            sys.path.append(base_setup_path)
-            importlib.import_module(setup_module_name)
         else:
-            setup_file_path = os.path.join(os.getcwd(), base_setup_path)
-            sys.path.append(setup_file_path)
+            sys.path.append(base_setup_path)
             importlib.import_module(setup_module_name)
 
     except D3AException as ex:

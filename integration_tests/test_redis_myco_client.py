@@ -36,4 +36,3 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
 
     def on_event_or_response(self, data):
         self.called_events.add("event_or_response")
-        logging.info(f"Event arrived {data}")

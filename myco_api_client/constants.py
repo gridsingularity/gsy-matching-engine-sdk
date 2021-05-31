@@ -4,4 +4,4 @@ SETUP_FILE_PATH = None
 
 DEFAULT_DOMAIN_NAME = "http://localhost:8000"
 DEFAULT_WEBSOCKET_DOMAIN = "ws://localhost:8000/external-ws"
-MYCO_CLIENT_JOB_UUID = "d223d8e3-bdfa-4d34-ae72-3905cbda9c8e"
+MYCO_CLIENT_JOB_UUID = ""
