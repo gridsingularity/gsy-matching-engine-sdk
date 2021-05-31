@@ -17,6 +17,8 @@ jobs:
       env:
         TOXENV: ci
         BRANCH: master
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
         export SOLC_BINARY=$HOME/solc/usr/bin/solc
         export LD_LIBRARY_PATH=$HOME/solc/usr/lib:$LD_LIBRARY_PATH
