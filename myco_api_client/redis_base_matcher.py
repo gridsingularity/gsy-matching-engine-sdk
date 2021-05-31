@@ -77,7 +77,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
 
     def _on_offers_bids_response(self, payload):
         data = json.loads(payload["data"])
-        self.executor.submit(self.on_offers_bids_response, message=data)
+        self.executor.submit(self.on_offers_bids_response, data=data)
 
     def on_offers_bids_response(self, data):
         recommendations = []
