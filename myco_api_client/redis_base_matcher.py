@@ -17,31 +17,32 @@ class RedisAPIException(Exception):
 class RedisBaseMatcher(MycoMatcherClientInterface):
     def __init__(self, redis_url='redis://localhost:6379',
                  pubsub_thread=None):
-        self.job_uuid = None
+        self.simulation_id = None
         self.redis_db = StrictRedis.from_url(redis_url)
         self.pubsub = self.redis_db.pubsub() if pubsub_thread is None else pubsub_thread
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
-        self._get_job_uuid(is_blocking=True)
-        self.redis_channels_prefix = f"external-myco/{self.job_uuid}"
+        self._get_simulation_id(is_blocking=True)
+        self.redis_channels_prefix = f"external-myco/{self.simulation_id}"
         self._subscribe_to_response_channels(pubsub_thread)
 
-    def _set_job_uuid(self, payload):
+    def _set_simulation_id(self, payload):
         data = json.loads(payload["data"])
-        self.job_uuid = data.get("job_uuid")
-        logging.debug(f"Received JOB UUID {self.job_uuid}")
+        self.simulation_id = data.get("simulation_id")
+        logging.debug(f"Received Simulation ID {self.simulation_id}")
 
-    def _check_is_set_job_uuid(self):
-        return self.job_uuid is not None
+    def _check_is_set_simulation_id(self):
+        return self.simulation_id is not None
 
-    def _get_job_uuid(self, is_blocking=True):
-        self.pubsub.subscribe(**{"external-myco/get_job_uuid/response": self._set_job_uuid})
+    def _get_simulation_id(self, is_blocking=True):
+        self.pubsub.subscribe(**{"external-myco/get_simulation_id/response":
+                                 self._set_simulation_id})
         self.pubsub.run_in_thread(daemon=True)
-        self.redis_db.publish("external-myco/get_job_uuid", json.dumps({}))
+        self.redis_db.publish("external-myco/get_simulation_id", json.dumps({}))
 
         if is_blocking:
             try:
                 wait_until_timeout_blocking(
-                    lambda: self._check_is_set_job_uuid(), timeout=50
+                    lambda: self._check_is_set_simulation_id(), timeout=50
                 )
             except AssertionError:
                 raise RedisAPIException(f'API registration process timed out.')

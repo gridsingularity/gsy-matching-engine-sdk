@@ -8,28 +8,28 @@ from d3a_interface.client_connections.websocket_connection import WebsocketThrea
 from myco_api_client import MycoMatcherClientInterface
 from myco_api_client.constants import MAX_WORKER_THREADS
 from myco_api_client.utils import (
-    job_uuid_from_env, domain_name_from_env, websocket_domain_name_from_env,
+    simulation_id_from_env, domain_name_from_env, websocket_domain_name_from_env,
     )
 from myco_api_client.websocket_device import WebsocketMessageReceiver
 
 
 class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
-    def __init__(self, job_uuid=None, domain_name=None, websocket_domain_name=None,
+    def __init__(self, simulation_id=None, domain_name=None, websocket_domain_name=None,
                  auto_connect=True):
-        self.job_uuid = job_uuid if job_uuid else job_uuid_from_env()
+        self.simulation_id = simulation_id if simulation_id else simulation_id_from_env()
         self.domain_name = domain_name if domain_name else domain_name_from_env()
         self.websocket_domain_name = websocket_domain_name \
             if websocket_domain_name else websocket_domain_name_from_env()
         self.dispatcher = self.websocket_thread = self.callback_thread = None
         self.jwt_token = retrieve_jwt_key_from_server(self.domain_name)
         self._create_jwt_refresh_timer(self.domain_name)
-        self.url_prefix = f"{self.domain_name}/external-connection/api/{self.job_uuid}"
+        self.url_prefix = f"{self.domain_name}/external-connection/api/{self.simulation_id}"
         if auto_connect:
             self.start_websocket_connection()
 
     def start_websocket_connection(self):
         self.dispatcher = WebsocketMessageReceiver(self)
-        websocket_uri = f"{self.websocket_domain_name}/{self.job_uuid}/myco/"
+        websocket_uri = f"{self.websocket_domain_name}/{self.simulation_id}/myco/"
         self.websocket_thread = WebsocketThread(websocket_uri, self.domain_name,
                                                 self.dispatcher)
         self.websocket_thread.start()

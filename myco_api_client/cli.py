@@ -31,7 +31,7 @@ from d3a_interface.utils import iterate_over_all_modules
 import myco_api_client.setups as setups
 from myco_api_client.constants import SETUP_FILE_PATH
 from myco_api_client.utils import (
-    job_uuid_from_env, domain_name_from_env,
+    simulation_id_from_env, domain_name_from_env,
     websocket_domain_name_from_env)
 
 log = getLogger(__name__)
@@ -87,8 +87,8 @@ def run(base_setup_path, setup_module_name,
         if domain_name else domain_name_from_env()
     os.environ["MYCO_CLIENT_WEBSOCKET_DOMAIN_NAME"] = web_socket \
         if web_socket else websocket_domain_name_from_env()
-    os.environ["MYCO_CLIENT_JOB_UUID"] = simulation_id \
-        if simulation_id else job_uuid_from_env()
+    os.environ["MYCO_CLIENT_SIMULATION_ID"] = simulation_id \
+        if simulation_id else simulation_id_from_env()
     load_client_script(base_setup_path, setup_module_name)
 
 

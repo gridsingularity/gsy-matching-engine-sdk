@@ -4,7 +4,7 @@ from typing import List, Dict
 from d3a_interface.constants_limits import FLOATING_POINT_TOLERANCE
 
 from myco_api_client.constants import DEFAULT_DOMAIN_NAME, DEFAULT_WEBSOCKET_DOMAIN, \
-    MYCO_CLIENT_JOB_UUID
+    MYCO_CLIENT_SIMULATION_ID
 from myco_api_client.dataclasses import BidOfferMatch
 
 
@@ -35,8 +35,8 @@ def websocket_domain_name_from_env():
     return os.environ.get("MYCO_CLIENT_WEBSOCKET_DOMAIN_NAME", DEFAULT_WEBSOCKET_DOMAIN)
 
 
-def job_uuid_from_env():
-    return os.environ.get("MYCO_CLIENT_JOB_UUID", MYCO_CLIENT_JOB_UUID)
+def simulation_id_from_env():
+    return os.environ.get("MYCO_CLIENT_SIMULATION_ID", MYCO_CLIENT_SIMULATION_ID)
 
 
 def perform_pay_as_bid_match(market_offers_bids_list_mapping):
@@ -47,7 +47,7 @@ def perform_pay_as_bid_match(market_offers_bids_list_mapping):
         { "market_offers_bids_list_mapping": {market_uuid: {"offers": [...], "bids": [...]}}}
 
     Returns: List[BidOfferMatch.serializable_dict()]
-
+    TODO: Export this function to d3a-interface
     """
     bid_offer_pairs = []
     for market_id, data in market_offers_bids_list_mapping.items():
