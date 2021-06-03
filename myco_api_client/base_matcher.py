@@ -36,8 +36,10 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         self.callback_thread = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
 
     def submit_matches(self, recommended_matches):
-        logging.debug(f"Sending recommendations {recommended_matches}")
-        self._post_request(f"{self.url_prefix}/post_recommendations", recommended_matches)
+        if recommended_matches:
+            logging.debug(f"Sending recommendations {recommended_matches}")
+            data = {"recommended_matches": recommended_matches}
+            self._post_request(f"{self.url_prefix}/post_recommendations", data)
 
     def request_orders(self, filters=None):
         self._get_request(f"{self.url_prefix}/get_offers_bids", {"filters": filters})

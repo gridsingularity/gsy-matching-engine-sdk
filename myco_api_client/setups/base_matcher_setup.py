@@ -11,22 +11,22 @@ class MycoMatcher(BaseMatcher):
         self.is_finished = False
 
     def on_market_cycle(self, data):
-        logging.info(f"Market Cycle")
+        pass
 
     def on_tick(self, data):
-        logging.info(f"Tick")
         self.request_orders(filters={})
 
     def on_offers_bids_response(self, data):
-        logging.info(f"Open offers/ bids response received {data}")
         recommendations = perform_pay_as_bid_match(data.get("market_offers_bids_list_mapping"))
-        self.submit_matches(recommendations)
+        logging.error(f"Submitting recommendations {len(recommendations)}")
+        if recommendations:
+            self.submit_matches(recommendations)
 
     def on_finish(self, data):
         self.is_finished = True
 
     def on_matched_recommendations_response(self, data):
-        logging.info(f"Trades recommendations response returned {data}")
+        pass
 
     def on_event_or_response(self, data):
         logging.info(f"Event arrived {data}")

@@ -5,6 +5,7 @@
   * [Installation Instructions](#installation-instructions)
   * [How to use the Client](#how-to-use-the-client)
     + [Interacting via CLI](#interacting-via-cli)
+  * [Events](#events)
 
 
 ## Overview
