@@ -74,7 +74,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
 
     def request_orders(self, filters=None):
         data = {"filters": filters}
-        self.redis_db.publish(f"{self.redis_channels_prefix}/get_offers_bids/", json.dumps(data))
+        self.redis_db.publish(f"{self.redis_channels_prefix}/offers_bids/", json.dumps(data))
 
     def _on_offers_bids_response(self, payload):
         data = json.loads(payload["data"])

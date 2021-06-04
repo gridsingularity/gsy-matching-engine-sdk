@@ -2,7 +2,7 @@ import logging
 from time import sleep
 
 from myco_api_client.base_matcher import BaseMatcher
-from myco_api_client.utils import perform_pay_as_bid_match
+from d3a_interface.utils import perform_pay_as_bid_match
 
 
 class MycoMatcher(BaseMatcher):

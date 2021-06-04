@@ -1,7 +1,7 @@
 import logging
 
 from myco_api_client.redis_base_matcher import RedisBaseMatcher
-from myco_api_client.utils import perform_pay_as_bid_match
+from d3a_interface.utils import perform_pay_as_bid_match
 
 
 class TestRedisMycoMatcher(RedisBaseMatcher):

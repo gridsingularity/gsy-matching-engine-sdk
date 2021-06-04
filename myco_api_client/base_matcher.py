@@ -39,10 +39,10 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         if recommended_matches:
             logging.debug(f"Sending recommendations {recommended_matches}")
             data = {"recommended_matches": recommended_matches}
-            self._post_request(f"{self.url_prefix}/post_recommendations", data)
+            self._post_request(f"{self.url_prefix}/post-recommendations", data)
 
     def request_orders(self, filters=None):
-        self._get_request(f"{self.url_prefix}/get_offers_bids", {"filters": filters})
+        self._get_request(f"{self.url_prefix}/offers-bids", {"filters": filters})
 
     def _on_offers_bids_response(self, data):
         self.on_offers_bids_response(data)
