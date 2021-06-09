@@ -9,15 +9,17 @@ from d3a_interface.client_connections.websocket_connection import WebsocketAsync
 
 class TestWebsocket(unittest.TestCase):
 
-    def setUp(self):
-        self.coro_backup = WebsocketAsyncConnection._connection_loop_coroutine
+    @classmethod
+    def setUpClass(cls):
+        cls.coro_backup = WebsocketAsyncConnection._connection_loop_coroutine
         WebsocketAsyncConnection._generate_websocket_connection_headers = lambda x: None
         d3a_interface.client_connections.websocket_connection.WEBSOCKET_WAIT_BEFORE_RETRY_SECONDS = 0
         d3a_interface.client_connections.websocket_connection.WEBSOCKET_MAX_CONNECTION_RETRIES = 5
         d3a_interface.client_connections.websocket_connection.WEBSOCKET_ERROR_THRESHOLD_SECONDS = 30
 
-    def tearDown(self):
-        WebsocketAsyncConnection._connection_loop_coroutine = self.coro_backup
+    @classmethod
+    def tearDownClass(cls):
+        WebsocketAsyncConnection._connection_loop_coroutine = cls.coro_backup
 
     @parameterized.expand(
         [(1, ),
