@@ -34,10 +34,10 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         return self.simulation_id is not None
 
     def _get_simulation_id(self, is_blocking=True):
-        self.pubsub.subscribe(**{"external-myco/get_simulation_id/response":
+        self.pubsub.subscribe(**{"external-myco/get-simulation-id/response":
                                  self._set_simulation_id})
         self.pubsub.run_in_thread(daemon=True)
-        self.redis_db.publish("external-myco/get_simulation_id", json.dumps({}))
+        self.redis_db.publish("external-myco/get-simulation-id", json.dumps({}))
 
         if is_blocking:
             try:
@@ -51,9 +51,9 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         channel_subs = {
             f"{self.redis_channels_prefix}/response/events/":
                 self._events_callback_dict,
-            f"{self.redis_channels_prefix}/response/get_offers_bids/":
+            f"{self.redis_channels_prefix}/response/get-offers-bids/":
                 self._on_offers_bids_response,
-            f"{self.redis_channels_prefix}/response/matched_recommendations/":
+            f"{self.redis_channels_prefix}/response/matched-recommendations/":
                 self._on_match,
             f"{self.redis_channels_prefix}/response/*": self._on_event_or_response
         }
@@ -70,11 +70,11 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
     def submit_matches(self, recommended_matches):
         logging.debug(f"Sending recommendations {recommended_matches}")
         data = {"recommended_matches": recommended_matches}
-        self.redis_db.publish(f"{self.redis_channels_prefix}/post_recommendations/", json.dumps(data))
+        self.redis_db.publish(f"{self.redis_channels_prefix}/post-recommendations/", json.dumps(data))
 
     def request_orders(self, filters=None):
         data = {"filters": filters}
-        self.redis_db.publish(f"{self.redis_channels_prefix}/offers_bids/", json.dumps(data))
+        self.redis_db.publish(f"{self.redis_channels_prefix}/offers-bids/", json.dumps(data))
 
     def _on_offers_bids_response(self, payload):
         data = json.loads(payload["data"])
