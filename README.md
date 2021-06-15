@@ -98,7 +98,7 @@ The constructor of the API class can connect and register automatically to a run
 - Fires a request to get all open bids/offers in the simulation: 
     ```python
   matching_client = BaseMatcher()
-  matching_client.request_orders(filters={}) 
+  matching_client.request_offers_bids(filters={}) 
     ```
   The response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm
 

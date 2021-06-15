@@ -18,7 +18,7 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
     def on_tick(self, data):
         self.called_events.add("tick")
         logging.info(f"Tick")
-        self.request_orders(filters={})
+        self.request_offers_bids(filters={})
 
     def on_offers_bids_response(self, data):
         self.called_events.add("offers_bids_response")

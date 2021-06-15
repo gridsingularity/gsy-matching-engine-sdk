@@ -14,7 +14,7 @@ class MycoMatcher(BaseMatcher):
         pass
 
     def on_tick(self, data):
-        self.request_orders(filters={})
+        self.request_offers_bids(filters={})
 
     def on_offers_bids_response(self, data):
         recommendations = perform_pay_as_bid_match(data.get("market_offers_bids_list_mapping"))

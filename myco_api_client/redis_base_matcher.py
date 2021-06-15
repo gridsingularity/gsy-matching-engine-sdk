@@ -72,7 +72,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         data = {"recommended_matches": recommended_matches}
         self.redis_db.publish(f"{self.redis_channels_prefix}/post-recommendations/", json.dumps(data))
 
-    def request_orders(self, filters=None):
+    def request_offers_bids(self, filters=None):
         data = {"filters": filters}
         self.redis_db.publish(f"{self.redis_channels_prefix}/offers-bids/", json.dumps(data))
 

@@ -12,7 +12,7 @@ class RedisMycoMatcher(RedisBaseMatcher):
         self.errors = 0
 
     def on_market_cycle(self, data):
-        self.request_orders(filters={})
+        self.request_offers_bids(filters={})
 
     def on_tick(self, data):
         pass
