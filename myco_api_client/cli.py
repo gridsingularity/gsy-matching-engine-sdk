@@ -102,4 +102,4 @@ def load_client_script(base_setup_path, setup_module_name):
         raise click.BadOptionUsage(ex.args[0])
     except ModuleNotFoundError as ex:
         log.error("Could not find the specified module")
-        quit()
+        sys.exit(1)
