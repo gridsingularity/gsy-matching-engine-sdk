@@ -7,7 +7,7 @@ from d3a_interface.utils import perform_pay_as_bid_match
 
 class RedisMycoMatcher(RedisBaseMatcher):
     def __init__(self, *args, **kwargs):
-        super(RedisMycoMatcher, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.is_finished = False
         self.errors = 0
 
@@ -28,7 +28,7 @@ class RedisMycoMatcher(RedisBaseMatcher):
         pass
 
     def on_event_or_response(self, data):
-        logging.info(f"Event arrived {data}")
+        logging.info("Event arrived %s", data)
 
 
 matcher = RedisMycoMatcher()

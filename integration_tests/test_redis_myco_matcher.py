@@ -6,7 +6,7 @@ from d3a_interface.utils import perform_pay_as_bid_match
 
 class TestRedisMycoMatcher(RedisBaseMatcher):
     def __init__(self, *args, **kwargs):
-        super(TestRedisMycoMatcher, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.is_finished = False
         self.errors = 0
         self.called_events = set()

@@ -23,6 +23,5 @@ class WebsocketMessageReceiver:
         try:
             self._handle_event_message(message)
             self.client.on_event_or_response(message)
-        except Exception as e:
-            logging.error(f"Error while processing incoming message {message}. Exception {e}.\n"
-                          f"{traceback.format_exc()}")
+        except Exception:
+            logging.exception("Error while processing incoming message %s.", message)

@@ -5,8 +5,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from d3a_interface.utils import wait_until_timeout_blocking
 from redis import StrictRedis
 
-
-from myco_api_client import MycoMatcherClientInterface
+from myco_api_client.myco_matcher_client_interface import MycoMatcherClientInterface
 from myco_api_client.constants import MAX_WORKER_THREADS
 
 
@@ -15,7 +14,7 @@ class RedisAPIException(Exception):
 
 
 class RedisBaseMatcher(MycoMatcherClientInterface):
-    def __init__(self, redis_url='redis://localhost:6379',
+    def __init__(self, redis_url="redis://localhost:6379",
                  pubsub_thread=None):
         self.simulation_id = None
         self.redis_db = StrictRedis.from_url(redis_url)
@@ -45,7 +44,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
                     lambda: self._check_is_set_simulation_id(), timeout=50
                 )
             except AssertionError:
-                raise RedisAPIException(f'API registration process timed out.')
+                raise RedisAPIException("API registration process timed out.")
 
     def _subscribe_to_response_channels(self, pubsub_thread=None):
         channel_subs = {

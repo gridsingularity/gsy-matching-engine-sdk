@@ -5,7 +5,7 @@ from d3a_interface.client_connections.utils import (
     RestCommunicationMixin, retrieve_jwt_key_from_server)
 from d3a_interface.client_connections.websocket_connection import WebsocketThread
 
-from myco_api_client import MycoMatcherClientInterface
+from myco_api_client.myco_matcher_client_interface import MycoMatcherClientInterface
 from myco_api_client.constants import MAX_WORKER_THREADS
 from myco_api_client.utils import (
     simulation_id_from_env, domain_name_from_env, websocket_domain_name_from_env,
@@ -18,8 +18,8 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
                  auto_connect=True):
         self.simulation_id = simulation_id if simulation_id else simulation_id_from_env()
         self.domain_name = domain_name if domain_name else domain_name_from_env()
-        self.websocket_domain_name = websocket_domain_name \
-            if websocket_domain_name else websocket_domain_name_from_env()
+        self.websocket_domain_name = (
+            websocket_domain_name if websocket_domain_name else websocket_domain_name_from_env())
         self.dispatcher = self.websocket_thread = self.callback_thread = None
         self.jwt_token = retrieve_jwt_key_from_server(self.domain_name)
         self._create_jwt_refresh_timer(self.domain_name)
@@ -37,7 +37,7 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
 
     def submit_matches(self, recommended_matches):
         if recommended_matches:
-            logging.debug(f"Sending recommendations {recommended_matches}")
+            logging.debug("Sending recommendations %s.", recommended_matches)
             data = {"recommended_matches": recommended_matches}
             self._post_request(f"{self.url_prefix}/post-recommendations", data)
 

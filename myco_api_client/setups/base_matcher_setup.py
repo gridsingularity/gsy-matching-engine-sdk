@@ -7,7 +7,7 @@ from d3a_interface.utils import perform_pay_as_bid_match
 
 class MycoMatcher(BaseMatcher):
     def __init__(self, *args, **kwargs):
-        super(MycoMatcher, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.is_finished = False
 
     def on_market_cycle(self, data):
@@ -18,7 +18,7 @@ class MycoMatcher(BaseMatcher):
 
     def on_offers_bids_response(self, data):
         recommendations = perform_pay_as_bid_match(data.get("market_offers_bids_list_mapping"))
-        logging.error(f"Submitting recommendations {len(recommendations)}")
+        logging.error("Submitting %s recommendations.", len(recommendations))
         if recommendations:
             self.submit_matches(recommendations)
 
@@ -29,7 +29,7 @@ class MycoMatcher(BaseMatcher):
         pass
 
     def on_event_or_response(self, data):
-        logging.info(f"Event arrived {data}")
+        logging.info("Event arrived %s", data)
 
 
 matcher = MycoMatcher()
