@@ -2,7 +2,7 @@ import os
 from setuptools import setup, find_packages
 from myco_api_client import __version__
 
-target_branch = os.environ.get("BRANCH", "feature/D3ASIM-3447")
+target_branch = os.environ.get("BRANCH", "master")
 
 
 try:
