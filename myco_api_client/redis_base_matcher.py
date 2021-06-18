@@ -50,7 +50,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         channel_subs = {
             f"{self.redis_channels_prefix}/response/events/":
                 self._events_callback_dict,
-            f"{self.redis_channels_prefix}/response/get-offers-bids/":
+            f"{self.redis_channels_prefix}/response/offers-bids/":
                 self._on_offers_bids_response,
             f"{self.redis_channels_prefix}/response/matched-recommendations/":
                 self._on_match,

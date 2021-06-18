@@ -39,8 +39,10 @@ def step_impl(context):
     # Infinite loop in order to leave the client running on the background
     # placing bids and offers on every market cycle.
     # Should stop if an error occurs or if the simulation has finished
-    while context.matcher.errors == 0 and context.matcher.is_finished is False:
+    counter = 0
+    while context.matcher.errors == 0 and context.matcher.is_finished is False and counter < 1500:
         sleep(3)
+        counter += 3
 
 
 @then("all events handler are called")
