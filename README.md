@@ -6,6 +6,7 @@
   * [How to use the Client](#how-to-use-the-client)
     + [Interacting via CLI](#interacting-via-cli)
   * [Events](#events)
+  * [Matching API](#matching-api)
 
 
 ## Overview
@@ -44,8 +45,6 @@ The following parameters can be set via the CLI:
 - `domain-name` --> D3A domain URL
 - `web-socket` --> D3A websocket URL
 - `simulation-id` --> UUID of the collaboration or Canary Network (CN)
-- `run-on-redis` --> This flag can be set for local testing of the API client, where no user authentication is required. 
-  For that, a locally running redis server and d3a simulation are needed.
 
 #### Examples
 - For local testing of the API client:
@@ -91,25 +90,31 @@ The constructor of the API class can connect and register automatically to a run
     ```
 ---
 
-#### Available methods
+### Available methods
 
 `Matcher` instances provide methods that can simplify specific operations. Below we have a demo:
 
-- Fires a request to get all open bids/offers in the simulation: 
-    ```python
-  matching_client = BaseMatcher()
-  matching_client.request_offers_bids(filters={}) 
-    ```
-  The response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm
+- Fires a request to get filtered open bids/offers in the simulation: 
+```python
+from myco_api_client.base_matcher import BaseMatcher
+matching_client = BaseMatcher()
+matching_client.request_offers_bids(filters={}) 
+```
+    - Supported filters include:
+      - "markets": List[str(IDs)], list of market ids, only fetch bids/offers in these markets (If not provided, all markets are included). 
+      - "attributes": Dict, attribute key: value of offers/bids, only list orders with provided attributes.
+      
+  The orders response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm and fires a call to submit_matches()
 
   
 - Posts the trading bid/offer pairs recommendations back to d3a, can be called from the overridden on_offers_bids_response: 
-    ```python
-    def on_offers_bids_response(self, data):
-      """
-      Posted recommendations should be in the format: 
-      [BidOfferMatch.serializable_dict(), BidOfferMatch.serializable_dict()]
-      """
-      recommendations = # Do something with the data
-      self.submit_matches(recommended_matches=recommendations)
-    ```
+```python
+def on_offers_bids_response(self, data):
+  """
+  Posted recommendations should be in the format: 
+  [BidOfferMatch.serializable_dict(), BidOfferMatch.serializable_dict()]
+  """
+  orders = data.get("orders")
+  recommendations = my_custom_matching_algorithm(orders)
+  self.submit_matches(recommended_matches=recommendations)
+```

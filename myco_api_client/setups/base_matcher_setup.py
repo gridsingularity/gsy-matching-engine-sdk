@@ -17,7 +17,7 @@ class MycoMatcher(BaseMatcher):
         self.request_offers_bids(filters={})
 
     def on_offers_bids_response(self, data):
-        recommendations = perform_pay_as_bid_match(data.get("market_offers_bids_list_mapping"))
+        recommendations = perform_pay_as_bid_match(data.get("orders"))
         logging.error("Submitting %s recommendations.", len(recommendations))
         if recommendations:
             self.submit_matches(recommendations)

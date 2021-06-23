@@ -8,7 +8,7 @@ class MycoMatcherClientInterface(ABC):
     support.
     """
     @abstractmethod
-    def request_offers_bids(self):
+    def request_offers_bids(self, filters: dict):
         """This method contains the code that queries the open offers/bids in the simulation.
 
         Returns: None
@@ -20,7 +20,7 @@ class MycoMatcherClientInterface(ABC):
 
         Args:
             data: Contains data of the open offers/ bids in the format:
-        { "market_offers_bids_list_mapping": {market_uuid: {"offers": [...], "bids": [...]}}}
+        { "orders": {market_uuid: {"offers": [...], "bids": [...]}}}
 
         Returns: None
         """
@@ -30,7 +30,7 @@ class MycoMatcherClientInterface(ABC):
         """This method will be called when the sent recommendations' response is returned.
 
         Args:
-            data:
+            data: Response returned after matching recommendations call on d3a
 
         Returns: None
         """
@@ -46,13 +46,13 @@ class MycoMatcherClientInterface(ABC):
         """
 
     def on_tick(self, data):
-        pass
+        """Event tick handler."""
 
     def on_market_cycle(self, data):
-        pass
+        """Event market handler."""
 
     def on_finish(self, data):
-        pass
+        """Event finish handler."""
 
     def on_event_or_response(self, data):
-        pass
+        """Extra handler for all events/responses callbacks."""

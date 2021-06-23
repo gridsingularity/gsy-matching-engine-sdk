@@ -18,7 +18,7 @@ class RedisMycoMatcher(RedisBaseMatcher):
         pass
 
     def on_offers_bids_response(self, data):
-        recommendations = perform_pay_as_bid_match(data.get("market_offers_bids_list_mapping"))
+        recommendations = perform_pay_as_bid_match(data.get("orders"))
         self.submit_matches(recommendations)
 
     def on_finish(self, data):

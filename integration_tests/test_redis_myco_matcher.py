@@ -23,7 +23,7 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
     def on_offers_bids_response(self, data):
         self.called_events.add("offers_bids_response")
         logging.info(f"Open offers/ bids response received {data}")
-        recommendations = perform_pay_as_bid_match(data.get("market_offers_bids_list_mapping"))
+        recommendations = perform_pay_as_bid_match(data.get("orders"))
         self.submit_matches(recommendations)
 
     def on_finish(self, data):
