@@ -1,6 +1,7 @@
 import json
 import logging
 from concurrent.futures.thread import ThreadPoolExecutor
+from typing import Dict
 
 from d3a_interface.utils import wait_until_timeout_blocking
 from redis import StrictRedis
@@ -71,7 +72,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         data = {"recommended_matches": recommended_matches}
         self.redis_db.publish(f"{self.redis_channels_prefix}/post-recommendations/", json.dumps(data))
 
-    def request_offers_bids(self, filters: dict = None):
+    def request_offers_bids(self, filters: Dict = None):
         data = {"filters": filters}
         self.redis_db.publish(f"{self.redis_channels_prefix}/offers-bids/", json.dumps(data))
 

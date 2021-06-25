@@ -101,10 +101,10 @@ matching_client = BaseMatcher()
 matching_client.request_offers_bids(filters={}) 
 ```
     - Supported filters include:
-      - "markets": List[str(IDs)], list of market ids, only fetch bids/offers in these markets (If not provided, all markets are included). 
-      - "attributes": Dict, attribute key: value of offers/bids, only list orders with provided attributes.
+      - `markets`: list of market ids, only fetch bids/offers in these markets (If not provided, all markets are included). 
+      - `attributes`: attribute key: value of offers/bids, only list orders with provided attributes.
       
-  The orders response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm and fires a call to submit_matches()
+  The bids_offers response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm and fires a call to submit_matches()
 
   
 - Posts the trading bid/offer pairs recommendations back to d3a, can be called from the overridden on_offers_bids_response: 
@@ -114,7 +114,7 @@ def on_offers_bids_response(self, data):
   Posted recommendations should be in the format: 
   [BidOfferMatch.serializable_dict(), BidOfferMatch.serializable_dict()]
   """
-  orders = data.get("orders")
-  recommendations = my_custom_matching_algorithm(orders)
+  bids_offers = data.get("bids_offers")
+  recommendations = my_custom_matching_algorithm(bids_offers)
   self.submit_matches(recommended_matches=recommendations)
 ```

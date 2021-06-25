@@ -1,5 +1,6 @@
 import logging
 from concurrent.futures.thread import ThreadPoolExecutor
+from typing import Dict
 
 from d3a_interface.client_connections.utils import (
     RestCommunicationMixin, retrieve_jwt_key_from_server)
@@ -41,7 +42,7 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
             data = {"recommended_matches": recommended_matches}
             self._post_request(f"{self.url_prefix}/post-recommendations", data)
 
-    def request_offers_bids(self, filters: dict = None):
+    def request_offers_bids(self, filters: Dict = None):
         self._get_request(f"{self.url_prefix}/offers-bids", {"filters": filters})
 
     def _on_offers_bids_response(self, data):
