@@ -12,14 +12,15 @@ class RedisMycoMatcher(RedisBaseMatcher):
         self.errors = 0
 
     def on_market_cycle(self, data):
-        self.request_offers_bids(filters={})
-
-    def on_tick(self, data):
         pass
 
+    def on_tick(self, data):
+        self.request_offers_bids(filters={})
+
     def on_offers_bids_response(self, data):
-        recommendations = perform_pay_as_bid_match(data.get("bids_offers"))
-        self.submit_matches(recommendations)
+        recommendations = perform_pay_as_bid_match(data.get("market_offers_bids_list_mapping"))
+        if recommendations:
+            self.submit_matches(recommendations)
 
     def on_finish(self, data):
         self.is_finished = True
