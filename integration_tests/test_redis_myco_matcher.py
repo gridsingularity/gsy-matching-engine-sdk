@@ -1,7 +1,7 @@
 import logging
 
-from myco_api_client.redis_base_matcher import RedisBaseMatcher
-from d3a_interface.utils import perform_pay_as_bid_match
+from myco_api_client.matchers.redis_base_matcher import RedisBaseMatcher
+from d3a_interface.matching_algorithms import PayAsBidMatchingAlgorithm
 
 
 class TestRedisMycoMatcher(RedisBaseMatcher):
@@ -22,8 +22,8 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
 
     def on_offers_bids_response(self, data):
         self.called_events.add("offers_bids_response")
-        logging.info(f"Open offers/ bids response received {data}")
-        recommendations = perform_pay_as_bid_match(data.get("bids_offers"))
+        recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
+            data.get("bids_offers"))
         self.submit_matches(recommendations)
 
     def on_finish(self, data):

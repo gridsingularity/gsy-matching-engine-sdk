@@ -6,7 +6,7 @@ from d3a_interface.client_connections.utils import (
     RestCommunicationMixin, retrieve_jwt_key_from_server)
 from d3a_interface.client_connections.websocket_connection import WebsocketThread
 
-from myco_api_client.myco_matcher_client_interface import MycoMatcherClientInterface
+from myco_api_client.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
 from myco_api_client.constants import MAX_WORKER_THREADS
 from myco_api_client.utils import (
     simulation_id_from_env, domain_name_from_env, websocket_domain_name_from_env,
@@ -40,7 +40,7 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         if recommended_matches:
             logging.debug("Sending recommendations %s.", recommended_matches)
             data = {"recommended_matches": recommended_matches}
-            self._post_request(f"{self.url_prefix}/post-recommendations", data)
+            self._post_request(f"{self.url_prefix}/recommendations", data)
 
     def request_offers_bids(self, filters: Dict = None):
         self._get_request(f"{self.url_prefix}/offers-bids", {"filters": filters})

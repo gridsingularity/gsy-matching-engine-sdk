@@ -6,7 +6,7 @@ from typing import Dict
 from d3a_interface.utils import wait_until_timeout_blocking
 from redis import StrictRedis
 
-from myco_api_client.myco_matcher_client_interface import MycoMatcherClientInterface
+from myco_api_client.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
 from myco_api_client.constants import MAX_WORKER_THREADS
 
 
@@ -34,10 +34,10 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         return self.simulation_id is not None
 
     def _get_simulation_id(self, is_blocking=True):
-        self.pubsub.subscribe(**{"external-myco/get-simulation-id/response":
+        self.pubsub.subscribe(**{"external-myco/simulation-id/response/":
                                  self._set_simulation_id})
         self.pubsub.run_in_thread(daemon=True)
-        self.redis_db.publish("external-myco/get-simulation-id", json.dumps({}))
+        self.redis_db.publish("external-myco/simulation-id/", json.dumps({}))
 
         if is_blocking:
             try:
@@ -45,61 +45,53 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
                     lambda: self._check_is_set_simulation_id(), timeout=50
                 )
             except AssertionError:
-                raise RedisAPIException("API registration process timed out.")
+                self.simulation_id = ""  # default simulation id for cli simulations
 
     def _subscribe_to_response_channels(self, pubsub_thread=None):
         channel_subs = {
-            f"{self.redis_channels_prefix}/response/events/":
-                self._events_callback_dict,
-            f"{self.redis_channels_prefix}/response/offers-bids/":
-                self._on_offers_bids_response,
-            f"{self.redis_channels_prefix}/response/matched-recommendations/":
-                self._on_match,
-            f"{self.redis_channels_prefix}/response/*": self._on_event_or_response
+            f"{self.redis_channels_prefix}/events/":
+                self._on_event_or_response,
+            f"{self.redis_channels_prefix}/*/response/": self._on_event_or_response,
         }
         self.pubsub.psubscribe(**channel_subs)
         if pubsub_thread is None:
             self.pubsub.run_in_thread(daemon=True)
 
-    def _events_callback_dict(self, message):
-        data = json.loads(message["data"])
-        event = data.get("event")
-        if hasattr(self, f"_on_{event}"):
-            getattr(self, f"_on_{event}")(data)
-
     def submit_matches(self, recommended_matches):
         logging.debug(f"Sending recommendations {recommended_matches}")
         data = {"recommended_matches": recommended_matches}
-        self.redis_db.publish(f"{self.redis_channels_prefix}/post-recommendations/", json.dumps(data))
+        self.redis_db.publish(f"{self.redis_channels_prefix}/recommendations/", json.dumps(data))
 
     def request_offers_bids(self, filters: Dict = None):
         data = {"filters": filters}
         self.redis_db.publish(f"{self.redis_channels_prefix}/offers-bids/", json.dumps(data))
 
-    def _on_offers_bids_response(self, payload):
-        data = json.loads(payload["data"])
-        self.executor.submit(self.on_offers_bids_response, data=data)
+    def _on_offers_bids_response(self, data: Dict):
+        self.on_offers_bids_response(data=data)
 
-    def on_offers_bids_response(self, data):
+    def on_offers_bids_response(self, data: Dict):
         recommendations = []
         self.submit_matches(recommendations)
 
-    def _on_match(self, payload):
-        data = json.loads(payload["data"])
-        self.executor.submit(self.on_matched_recommendations_response, data=data)
+    def _on_match(self, data: Dict):
+        self.on_matched_recommendations_response(data=data)
 
-    def on_matched_recommendations_response(self, data):
+    def on_matched_recommendations_response(self, data: Dict):
         pass
 
-    def _on_tick(self, data):
-        self.executor.submit(self.on_tick, data=data)
+    def _on_tick(self, data: Dict):
+        self.on_tick(data=data)
 
-    def _on_market(self, data):
-        self.executor.submit(self.on_market_cycle, data=data)
+    def _on_market(self, data: Dict):
+        self.on_market_cycle(data=data)
 
-    def _on_finish(self, data):
-        self.executor.submit(self.on_finish, data=data)
+    def _on_finish(self, data: Dict):
+        self.on_finish(data=data)
 
-    def _on_event_or_response(self, payload):
+    def _on_event_or_response(self, payload: Dict):
         data = json.loads(payload["data"])
         self.executor.submit(self.on_event_or_response, data)
+        # Call the corresponding event handler
+        event = data.get("event")
+        if hasattr(self, f"_on_{event}"):
+            self.executor.submit(getattr(self, f"_on_{event}"), data)
