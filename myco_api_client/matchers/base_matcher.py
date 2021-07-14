@@ -61,7 +61,7 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
     def _on_tick(self, data):
         self.on_tick(data)
 
-    def _on_market(self, data):
+    def _on_market_cycle(self, data):
         self.on_market_cycle(data)
 
     def _on_finish(self, data):

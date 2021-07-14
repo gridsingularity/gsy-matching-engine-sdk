@@ -82,7 +82,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
     def _on_tick(self, data: Dict):
         self.on_tick(data=data)
 
-    def _on_market(self, data: Dict):
+    def _on_market_cycle(self, data: Dict):
         self.on_market_cycle(data=data)
 
     def _on_finish(self, data: Dict):
