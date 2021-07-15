@@ -1,4 +1,7 @@
 from abc import ABC, abstractmethod
+from typing import Dict, List
+
+from d3a_interface.dataclasses import BidOfferMatch
 
 
 class MycoMatcherClientInterface(ABC):
@@ -8,14 +11,14 @@ class MycoMatcherClientInterface(ABC):
     support.
     """
     @abstractmethod
-    def request_offers_bids(self, filters: dict):
+    def request_offers_bids(self, filters: Dict):
         """This method contains the code that queries the open offers/bids in the simulation.
 
         Returns: None
         """
 
     @abstractmethod
-    def on_offers_bids_response(self, data):
+    def on_offers_bids_response(self, data: Dict):
         """This method can be overridden to perform specific actions after bids/offers response is returned.
 
         Args:
@@ -26,7 +29,7 @@ class MycoMatcherClientInterface(ABC):
         """
 
     @abstractmethod
-    def on_matched_recommendations_response(self, data):
+    def on_matched_recommendations_response(self, data: Dict):
         """This method will be called when the sent recommendations' response is returned.
 
         Args:
@@ -36,7 +39,7 @@ class MycoMatcherClientInterface(ABC):
         """
 
     @abstractmethod
-    def submit_matches(self, recommended_matches):
+    def submit_matches(self, recommended_matches: List[BidOfferMatch.serializable_dict]):
         """This method is meant to post the recommended_matches to d3a.
 
         Args:
@@ -45,14 +48,14 @@ class MycoMatcherClientInterface(ABC):
         Returns: None
         """
 
-    def on_tick(self, data):
+    def on_tick(self, data: Dict):
         """Event tick handler."""
 
-    def on_market_cycle(self, data):
+    def on_market_cycle(self, data: Dict):
         """Event market handler."""
 
-    def on_finish(self, data):
+    def on_finish(self, data: Dict):
         """Event finish handler."""
 
-    def on_event_or_response(self, data):
+    def on_event_or_response(self, data: Dict):
         """Extra handler for all events/responses callbacks."""
