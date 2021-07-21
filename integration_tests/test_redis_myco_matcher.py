@@ -12,7 +12,7 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
         self.called_events = set()
 
     def on_market_cycle(self, data):
-        self.called_events.add("market")
+        self.called_events.add("market_cycle")
         logging.info(f"Market Cycle")
 
     def on_tick(self, data):
