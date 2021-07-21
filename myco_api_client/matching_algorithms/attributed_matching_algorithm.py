@@ -1,4 +1,3 @@
-import logging
 from copy import deepcopy
 from typing import Dict, Union, List, Tuple
 
@@ -29,9 +28,9 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
             if not (bids_mapping and offers_mapping):
                 continue
 
-            green_offers = cls._filter_offers_bids_have_attribute(
+            green_offers = cls._filter_offers_bids_by_attribute(
                 list(offers_mapping.values()), "energy_type", "PV")
-            green_bids = cls._filter_offers_bids_have_requirement(
+            green_bids = cls._filter_offers_bids_by_requirement(
                 list(bids_mapping.values()), "energy_type", "PV")
             green_recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
                     {market_id: {"bids": green_bids, "offers": green_offers}})
@@ -47,7 +46,7 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         return recommendations
 
     @classmethod
-    def _filter_offers_bids_have_requirement(
+    def _filter_offers_bids_by_requirement(
             cls, offers_bids: List[Dict], requirement_key: str,
             requirement_value: Union[str, int, float]) -> List[Dict]:
         """Return a list of offers or bids which have a requirement == specified value."""
@@ -64,13 +63,13 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         return filtered_list
 
     @classmethod
-    def _filter_offers_bids_have_attribute(
+    def _filter_offers_bids_by_attribute(
             cls, offers_bids: list, attribute_key: str,
             attribute_value: Union[str, int, float]) -> List[Dict]:
         """Return a list of offers or bids which have an attribute == specified value."""
         filtered_list = []
         for offer_bid in offers_bids:
-            if attribute_key not in getattr(offer_bid, "attributes", {}):
+            if attribute_key not in offer_bid.get("attributes") or {}:
                 continue
             if (isinstance(offer_bid.attributes.get(attribute_key), list)
                     and attribute_value in offer_bid.attributes.get(attribute_key)
@@ -97,5 +96,5 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
 
 def test_filter_offers_bids_have_requirement(
         offers_bids: list, requirement_key: str, requirement_value: Union[str, int, float]):
-    return AttributedMatchingAlgorithm._filter_offers_bids_have_requirement(
+    return AttributedMatchingAlgorithm._filter_offers_bids_by_requirement(
         offers_bids, requirement_key, requirement_value)
