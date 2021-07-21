@@ -33,7 +33,7 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
 
     def on_matched_recommendations_response(self, data):
         self.called_events.add("match")
-        logging.info(f"Trades recommendations response returned {data}")
+        logging.info("Trades recommendations response returned", data)
 
     def on_event_or_response(self, data):
         self.called_events.add("event_or_response")
