@@ -1,10 +1,11 @@
 import logging
 
-from myco_api_client.matchers.redis_base_matcher import RedisBaseMatcher
 from d3a_interface.matching_algorithms import PayAsBidMatchingAlgorithm
+from myco_api_client.matchers.redis_base_matcher import RedisBaseMatcher
 
 
 class TestRedisMycoMatcher(RedisBaseMatcher):
+    """Wrapper test class for the RedisBaseMatcher."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_finished = False
@@ -13,11 +14,11 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
 
     def on_market_cycle(self, data):
         self.called_events.add("market_cycle")
-        logging.info(f"Market Cycle")
+        logging.info("Market Cycle")
 
     def on_tick(self, data):
         self.called_events.add("tick")
-        logging.info(f"Tick")
+        logging.info("Tick")
         self.request_offers_bids(filters={})
 
     def on_offers_bids_response(self, data):

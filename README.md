@@ -34,9 +34,11 @@ pip install git+https://github.com/gridsingularity/myco-api-client.git
 
 ### Interacting via CLI
 In order to get help, please run:
+
 ```
 myco run --help
 ```
+
 The following parameters can be set via the CLI:
 - `base-setup-path` --> Path where user's client script resides, otherwise `myco_api_client/setups` is used.
 - `setup` --> Name of user's API client module/script.
@@ -53,11 +55,14 @@ The following parameters can be set via the CLI:
   ```
 - For testing your api client script on remote server hosting d3a's collaboration/CNs.
     - If user's client script resides on `myco_api_client/setups`
-    ```
+    
+  ```
     myco run -u <username> -p <password> --setup base_matcher_setup -s <simulation-uuid> ...
     ```
+    
     - If user's client script resides on a different directory, then its path needs to be set via `--base-setup-path`
-    ```
+    
+  ```
     myco run -u <username> -p <password> --base-setup-path <absolute/relative-path-to-your-client-script> --setup <name-of-your-script> ...
     ```
 
@@ -94,27 +99,30 @@ The constructor of the API class can connect and register automatically to a run
 
 `Matcher` instances provide methods that can simplify specific operations. Below we have a demo:
 
-- Fires a request to get filtered open bids/offers in the simulation: 
-```python
-from myco_api_client.matchers.base_matcher import BaseMatcher
-matching_client = BaseMatcher()
-matching_client.request_offers_bids(filters={}) 
-```
-    - Supported filters include:
-      - `markets`: list of market ids, only fetch bids/offers in these markets (If not provided, all markets are included). 
-      - `energy_type`: energy type of offers to be returned.
-      
-  The bids_offers response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm and fires a call to submit_matches()
+- Fire a request to get filtered open bids/offers in the simulation: 
+
+    ```python
+    from myco_api_client.matchers.base_matcher import BaseMatcher
+    matching_client = BaseMatcher()
+    matching_client.request_offers_bids(filters={}) 
+    ```
+    
+        - Supported filters include:
+          - `markets`: list of market ids, only fetch bids/offers in these markets (If not provided, all markets are included). 
+          - `energy_type`: energy type of offers to be returned.
+          
+      The bids_offers response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm and fires a call to submit_matches()
 
   
 - Posts the trading bid/offer pairs recommendations back to d3a, can be called from the overridden on_offers_bids_response: 
-```python
-def on_offers_bids_response(self, data):
-  """
-  Posted recommendations should be in the format: 
-  [BidOfferMatch.serializable_dict(), BidOfferMatch.serializable_dict()]
-  """
-  bids_offers = data.get("bids_offers")
-  recommendations = my_custom_matching_algorithm(bids_offers)
-  self.submit_matches(recommended_matches=recommendations)
-```
+
+    ```python
+    def on_offers_bids_response(self, data):
+      """
+      Posted recommendations should be in the format: 
+      [BidOfferMatch.serializable_dict(), BidOfferMatch.serializable_dict()]
+      """
+      bids_offers = data.get("bids_offers")
+      recommendations = my_custom_matching_algorithm(bids_offers)
+      self.submit_matches(recommended_matches=recommendations)
+    ```

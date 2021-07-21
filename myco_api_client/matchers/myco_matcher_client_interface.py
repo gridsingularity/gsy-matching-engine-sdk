@@ -49,13 +49,13 @@ class MycoMatcherClientInterface(ABC):
         """
 
     def on_tick(self, data: Dict):
-        """Event tick handler."""
+        """Tick event handler."""
 
     def on_market_cycle(self, data: Dict):
-        """Event market handler."""
+        """Market cycle event handler."""
 
     def on_finish(self, data: Dict):
-        """Event finish handler."""
+        """Finish event handler."""
 
     def on_event_or_response(self, data: Dict):
         """Extra handler for all events/responses callbacks."""
