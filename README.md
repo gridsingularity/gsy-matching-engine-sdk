@@ -107,11 +107,11 @@ The constructor of the API class can connect and register automatically to a run
     matching_client.request_offers_bids(filters={}) 
     ```
     
-        - Supported filters include:
-          - `markets`: list of market ids, only fetch bids/offers in these markets (If not provided, all markets are included). 
-          - `energy_type`: energy type of offers to be returned.
+    Supported filters include:
+    - `markets`: list of market ids, only fetch bids/offers in these markets (If not provided, all markets are included). 
+    - `energy_type`: energy type of offers to be returned.
           
-      The bids_offers response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm and fires a call to submit_matches()
+    The bids_offers response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm and fires a call to submit_matches()
 
   
 - Posts the trading bid/offer pairs recommendations back to d3a, can be called from the overridden on_offers_bids_response: 
