@@ -32,12 +32,10 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         logging.debug(f"Received Simulation ID {self.simulation_id}")
 
     def _check_is_set_simulation_id(self):
-        self.pubsub.get_message(timeout=1)
+        payload = self.pubsub.get_message(timeout=1)
+        if payload:
+            self._set_simulation_id(payload)
         return self.simulation_id is not None
-
-    def _start_pubsub_thread(self):
-        if self.pubsub_thread is None:
-            self.pubsub_thread = self.pubsub.run_in_thread(daemon=True, sleep_time=0.001)
 
     def _get_simulation_id(self, is_blocking=True):
         self.pubsub.subscribe(**{"external-myco/simulation-id/response/":
