@@ -20,7 +20,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         self.simulation_id = None
         self.pubsub_thread = pubsub_thread
         self.redis_db = StrictRedis.from_url(redis_url)
-        self.pubsub = self.redis_db.pubsub() if pubsub_thread is None else pubsub_thread.pubsub
+        self.pubsub = self.redis_db.pubsub() if pubsub_thread is None else pubsub_thread
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
         self._get_simulation_id(is_blocking=True)
         self.redis_channels_prefix = f"external-myco/{self.simulation_id}"
@@ -36,7 +36,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
 
     def _start_pubsub_thread(self):
         if self.pubsub_thread is None:
-            self.pubsub_thread = self.pubsub.run_in_thread(daemon=True, sleep_time=0.001)
+            self.pubsub_thread = self.pubsub.run_in_thread(daemon=True)
 
     def _get_simulation_id(self, is_blocking=True):
         self.pubsub.subscribe(**{"external-myco/simulation-id/response/":
