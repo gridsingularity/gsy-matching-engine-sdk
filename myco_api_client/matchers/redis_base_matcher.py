@@ -16,15 +16,15 @@ class RedisAPIException(Exception):
 
 class RedisBaseMatcher(MycoMatcherClientInterface):
     def __init__(self, redis_url="redis://localhost:6379",
-                 pubsub_thread=None):
+                 pubsub_obj=None):
         self.simulation_id = None
-        self.pubsub_thread = pubsub_thread
+        self.pubsub_thread = pubsub_obj
         self.redis_db = StrictRedis.from_url(redis_url)
-        self.pubsub = self.redis_db.pubsub() if pubsub_thread is None else pubsub_thread.pubsub
+        self.pubsub = self.redis_db.pubsub() if pubsub_obj is None else pubsub_obj
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
         self._get_simulation_id(is_blocking=True)
         self.redis_channels_prefix = f"external-myco/{self.simulation_id}"
-        self._subscribe_to_response_channels()       
+        self._subscribe_to_response_channels(pubsub_obj)
 
     def _set_simulation_id(self, payload):
         data = json.loads(payload["data"])
@@ -32,6 +32,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         logging.debug(f"Received Simulation ID {self.simulation_id}")
 
     def _check_is_set_simulation_id(self):
+        self.pubsub.get_message(timeout=1)
         return self.simulation_id is not None
 
     def _start_pubsub_thread(self):
@@ -41,7 +42,6 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
     def _get_simulation_id(self, is_blocking=True):
         self.pubsub.subscribe(**{"external-myco/simulation-id/response/":
                                  self._set_simulation_id})
-        self._start_pubsub_thread()
         self.redis_db.publish("external-myco/simulation-id/", json.dumps({}))
 
         if is_blocking:
@@ -52,14 +52,15 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
             except AssertionError:
                 self.simulation_id = ""  # default simulation id for cli simulations
 
-    def _subscribe_to_response_channels(self):
+    def _subscribe_to_response_channels(self, pubsub_obj=None):
         channel_subs = {
             f"{self.redis_channels_prefix}/events/":
                 self._on_event_or_response,
             f"{self.redis_channels_prefix}/*/response/": self._on_event_or_response,
         }
         self.pubsub.psubscribe(**channel_subs)
-        self._start_pubsub_thread()
+        if pubsub_obj is None:
+            self.pubsub.run_in_thread(daemon=True, sleep_time=0.001)
 
     def submit_matches(self, recommended_matches):
         logging.debug(f"Sending recommendations {recommended_matches}")
