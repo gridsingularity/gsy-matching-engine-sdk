@@ -21,7 +21,8 @@ def step_impl(context, setup_file: str, d3a_options: str):
         d3a_options (str): options to be passed to the d3a run command. E.g.: "-t 1s -d 12h"
     """
     sleep(3)
-    system("docker run -d --name d3a-tests --env REDIS_URL=redis://redis.container:6379/ "
+    system("docker run -d --name d3a-myco-tests.container "
+           "--env REDIS_URL=redis://redis.container:6379/ "
            f"--net integtestnet d3a-tests -l INFO run --setup {setup_file} "
            f"--no-export --seed 0 --enable-external-connection {d3a_options} ")
 
@@ -40,7 +41,7 @@ def step_impl(context):
     # placing bids and offers on every market cycle.
     # Should stop if an error occurs or if the simulation has finished
     counter = 0
-    while context.matcher.errors == 0 and context.matcher.is_finished is False and counter < 1500:
+    while context.matcher.errors == 0 and not context.matcher.is_finished:
         sleep(3)
         counter += 3
 

@@ -3,7 +3,8 @@ import os
 
 
 def before_all(context):
-    system("docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)")
+    for container_name in ["redis.container", "d3a-myco-tests.container"]:
+        system(f"docker stop {container_name} && docker rm {container_name}")
     system("docker network create integtestnet")
     system("bash integration_tests/build_test_containers.sh")
 
