@@ -27,6 +27,21 @@ def step_impl(context, setup_file: str, d3a_options: str):
            f"--no-export --seed 0 --enable-external-connection {d3a_options} ")
 
 
+@given('d3a-api-client is connected to simulation')
+def step_impl(context):
+    sleep(5)
+    from d3a_api_client.setups.test_stocks_attribute_requirement import AutoAggregator
+    from d3a_api_client.redis_device import RedisDeviceClient
+    context.aggregator = AutoAggregator(aggregator_name="test_aggr")
+    load = RedisDeviceClient('H1 General Load1', autoregister=True,
+                                     pubsub_thread=context.aggregator.pubsub)
+    load.select_aggregator(context.aggregator.aggregator_uuid)
+
+    pv = RedisDeviceClient('H1 PV1', autoregister=True,
+                           pubsub_thread=context.aggregator.pubsub)
+    pv.select_aggregator(context.aggregator.aggregator_uuid)
+
+
 @when("the myco client is started with redis_base_matcher_setup")
 def step_impl(context):
     sleep(5)
@@ -55,3 +70,8 @@ def step_impl(context):
 @then("the myco client does not report errors")
 def step_impl(context):
     assert context.matcher.errors == 0
+
+
+@then("the api client's bid's/offer's attributes/requirements weren't violated")
+def step_impl(context):
+    assert context.aggregator.trade_violation_count == 0

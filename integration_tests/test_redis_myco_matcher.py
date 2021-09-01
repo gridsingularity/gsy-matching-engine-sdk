@@ -1,6 +1,7 @@
 import logging
 
 from d3a_interface.matching_algorithms import PayAsBidMatchingAlgorithm
+from myco_api_client.matching_algorithms import AttributedMatchingAlgorithm
 from myco_api_client.matchers.redis_base_matcher import RedisBaseMatcher
 
 
@@ -13,6 +14,7 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
         self.called_events = set()
 
     def on_market_cycle(self, data):
+        print(f"on_market_cycle")
         self.called_events.add("market_cycle")
         logging.info("Market Cycle")
 
@@ -23,7 +25,7 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
 
     def on_offers_bids_response(self, data):
         self.called_events.add("offers_bids_response")
-        recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
+        recommendations = AttributedMatchingAlgorithm.get_matches_recommendations(
             data.get("bids_offers"))
         self.submit_matches(recommendations)
 
