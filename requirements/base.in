@@ -3,7 +3,6 @@ click
 click-default-group
 colorlog
 fabric3
-parameterized
 pytest
 redis
 requests

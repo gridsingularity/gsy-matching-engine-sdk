@@ -21,7 +21,6 @@ filelock==3.0.12          # via tox, virtualenv
 idna==2.10                # via requests
 iniconfig==1.1.1          # via pytest
 packaging==20.7           # via pytest, tox
-parameterized==0.7.4      # via -r requirements/base.in
 paramiko==2.7.2           # via fabric3
 parse-type==0.5.2         # via behave
 parse==1.18.0             # via behave, parse-type
