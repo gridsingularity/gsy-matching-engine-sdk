@@ -22,7 +22,7 @@ def _ensure_pip_tools():
     except ImportError:
         with hide('running', 'stdout'):
             puts(yellow("Installing 'pip-tools'"), show_prefix=True)
-            local("pip install pip-tools==4.4.0")
+            local("pip install pip-tools")
 
 
 @task
