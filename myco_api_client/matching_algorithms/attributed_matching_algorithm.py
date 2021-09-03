@@ -54,7 +54,7 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         for offer_bid in offers_bids:
             for requirement in offer_bid.get("requirements") or []:
                 if requirement_key not in requirement:
-                    continue                                                                    
+                    continue
                 if (isinstance(requirement.get(requirement_key), list)
                         and requirement_value in requirement.get(requirement_key)
                         or requirement_value == requirement.get(requirement_key)):
@@ -71,9 +71,9 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         for offer_bid in offers_bids:
             if attribute_key not in (offer_bid.get("attributes") or {}):
                 continue
-            if (isinstance(offer_bid['attributes'].get(attribute_key), list)
-                    and attribute_value in offer_bid['attributes'].get(attribute_key)
-                    or attribute_value == offer_bid['attributes'].get(attribute_key)):           
+            if (isinstance(offer_bid["attributes"].get(attribute_key), list)
+                    and attribute_value in offer_bid["attributes"].get(attribute_key)
+                    or attribute_value == offer_bid["attributes"].get(attribute_key)):
                 filtered_list.append(offer_bid)
         return filtered_list
 
