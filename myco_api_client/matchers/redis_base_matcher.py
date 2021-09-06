@@ -97,5 +97,14 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         self.executor.submit(self.on_event_or_response, data)
         # Call the corresponding event handler
         event = data.get("event")
-        if hasattr(self, f"_on_{event}"):
-            self.executor.submit(getattr(self, f"_on_{event}"), data)
+        callback_function_name = f"_on_{event}"
+        if hasattr(self, callback_function_name):
+            # Schedule the callback
+            future = self.executor.submit(getattr(self, callback_function_name), data)
+            try:
+                # Explicitly execute the call. Not doing so will cause the ThreadPoolExecutor to
+                # swallow and hide potential exceptions making it tricky to debug.
+                future.result()
+            except Exception as ex:
+                logging.exception("Exception raised by %s while executing event %s",
+                    callback_function_name, event)
