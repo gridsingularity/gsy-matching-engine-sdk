@@ -71,9 +71,9 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         for offer_bid in offers_bids:
             if attribute_key not in (offer_bid.get("attributes") or {}):
                 continue
-            if (isinstance(offer_bid.attributes.get(attribute_key), list)
-                    and attribute_value in offer_bid.attributes.get(attribute_key)
-                    or attribute_value == offer_bid.attributes.get(attribute_key)):
+            if (isinstance(offer_bid["attributes"].get(attribute_key), list)
+                    and attribute_value in offer_bid["attributes"].get(attribute_key)
+                    or attribute_value == offer_bid["attributes"].get(attribute_key)):
                 filtered_list.append(offer_bid)
         return filtered_list
 
@@ -85,8 +85,8 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         open_bids_mapping = deepcopy(bids_mapping)
         open_offers_mapping = deepcopy(offers_mapping)
         for recommendation in recommendations:
-            bid_id = recommendation["bid"]["id"]
-            offer_id = recommendation["offer"]["id"]
+            bid_id = recommendation["bids"][0]['id']
+            offer_id = recommendation["offers"][0]['id']
             if bid_id in open_bids_mapping:
                 open_bids_mapping.pop(bid_id)
             if offer_id in open_offers_mapping:
