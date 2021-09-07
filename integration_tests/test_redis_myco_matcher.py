@@ -37,3 +37,15 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
 
     def on_event_or_response(self, data):
         self.called_events.add("event_or_response")
+
+    def on_area_map(self, data):
+        area_list = ["Grid", "House 1", "H1 General Load1", "H1 General Load2",
+                     "H1 Storage1", "H1 Storage2", "H1 PV1", "H1 PV2",
+                     "House 2", "H2 General Load1", "H2 Storage1", "H2 PV", "Cell Tower",
+                     "Market Maker"]
+        if data == {}:
+            self.errors += 1
+        expected_area_list = list(data['area_mapp'].values())
+        if expected_area_list != area_list:
+            self.errors += 1
+
