@@ -9,7 +9,7 @@ from integration_tests.test_redis_myco_matcher import TestRedisMycoMatcher
 @given("redis container is started")
 def step_impl(context):
     system("docker run -d -p 6379:6379 --name redis.container -h redis.container "
-           "--net integtestnet gsyd3a/d3a:redis-staging")
+           "--net integtestnet redis:6.2.5")
 
 
 @given("d3a is started using setup {setup_file} ({d3a_options})")
