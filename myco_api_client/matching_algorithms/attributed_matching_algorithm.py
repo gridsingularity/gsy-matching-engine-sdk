@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import Dict, Union, List, Tuple
 
-from d3a_interface.dataclasses import BidOfferMatch
+from d3a_interface.data_classes import BidOfferMatch
 from d3a_interface.matching_algorithms import BaseMatchingAlgorithm, PayAsBidMatchingAlgorithm
 
 
