@@ -4,8 +4,10 @@ from typing import Dict, Union, List, Tuple
 from d3a_interface.data_classes import BidOfferMatch
 from d3a_interface.matching_algorithms import BaseMatchingAlgorithm, PayAsBidMatchingAlgorithm
 
+from myco_api_client.matching_algorithms.preferred_trading_partners_algorithm import (
+    PreferredPartnersMatchingAlgorithm)
 
-# TODO: Implement step 1 of the algorithm + add tests
+
 class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
     """Perform attributed bid offer matching using pay as bid algorithm.
 
@@ -27,7 +29,16 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
 
             if not (bids_mapping and offers_mapping):
                 continue
+            # Trading partners matching
+            trading_partners_recommendations = (
+                PreferredPartnersMatchingAlgorithm.get_matches_recommendations(
+                    {market_id: data}))
+            recommendations.extend(trading_partners_recommendations)
 
+            bids_mapping, offers_mapping = cls._filter_out_consumed_bids_offers(
+                bids_mapping, offers_mapping, trading_partners_recommendations)
+
+            # Green energy matching
             green_offers = cls._filter_offers_bids_by_attribute(
                 list(offers_mapping.values()), "energy_type", "PV")
             green_bids = cls._filter_offers_bids_by_requirement(
@@ -35,8 +46,11 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
             green_recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
                     {market_id: {"bids": green_bids, "offers": green_offers}})
             recommendations.extend(green_recommendations)
-            bids_mapping, offers_mapping = cls._filter_open_bids_offers(
+
+            bids_mapping, offers_mapping = cls._filter_out_consumed_bids_offers(
                 bids_mapping, offers_mapping, green_recommendations)
+
+            # Residual matching
             residual_recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
                     {market_id: {
                         "bids": list(bids_mapping.values()),
@@ -78,19 +92,17 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         return filtered_list
 
     @classmethod
-    def _filter_open_bids_offers(
+    def _filter_out_consumed_bids_offers(
             cls, bids_mapping: Dict[str, Dict], offers_mapping: Dict[str, Dict],
             recommendations: List[BidOfferMatch.serializable_dict]) -> Tuple[Dict, Dict]:
         """Return bids/offers lists that are not present in the recommendations yet."""
         open_bids_mapping = deepcopy(bids_mapping)
         open_offers_mapping = deepcopy(offers_mapping)
         for recommendation in recommendations:
-            bid_id = recommendation["bids"][0]['id']
-            offer_id = recommendation["offers"][0]['id']
-            if bid_id in open_bids_mapping:
-                open_bids_mapping.pop(bid_id)
-            if offer_id in open_offers_mapping:
-                open_offers_mapping.pop(offer_id)
+            for bid in recommendation["bids"]:
+                open_bids_mapping.pop(bid["id"], None)
+            for offer in recommendation["offers"]:
+                open_offers_mapping.pop(offer["id"], None)
         return open_bids_mapping, open_offers_mapping
 
 
