@@ -4,7 +4,7 @@ from typing import Dict, Union, List, Tuple
 from d3a_interface.data_classes import BidOfferMatch
 from d3a_interface.matching_algorithms import BaseMatchingAlgorithm, PayAsBidMatchingAlgorithm
 
-from myco_api_client.matching_algorithms.preferred_trading_partners_algorithm import (
+from myco_api_client.matching_algorithms.preferred_partners_algorithm import (
     PreferredPartnersMatchingAlgorithm)
 
 
