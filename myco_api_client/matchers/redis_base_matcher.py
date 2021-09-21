@@ -3,11 +3,11 @@ import logging
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Dict
 
-from d3a_interface.utils import wait_until_timeout_blocking
+from d3a_interface.utils import execute_function_util, wait_until_timeout_blocking
 from redis import StrictRedis
 
-from myco_api_client.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
 from myco_api_client.constants import MAX_WORKER_THREADS
+from myco_api_client.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
 
 
 class RedisAPIException(Exception):
@@ -24,7 +24,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
         self._get_simulation_id(is_blocking=True)
         self.redis_channels_prefix = f"external-myco/{self.simulation_id}"
-        self._subscribe_to_response_channels()       
+        self._subscribe_to_response_channels()
 
     def _set_simulation_id(self, payload):
         data = json.loads(payload["data"])
@@ -94,8 +94,17 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
 
     def _on_event_or_response(self, payload: Dict):
         data = json.loads(payload["data"])
-        self.executor.submit(self.on_event_or_response, data)
+        self.executor.submit(
+            execute_function_util,
+            function=lambda: self.on_event_or_response(data),
+            function_name="on_event_or_response")
+
         # Call the corresponding event handler
         event = data.get("event")
-        if hasattr(self, f"_on_{event}"):
-            self.executor.submit(getattr(self, f"_on_{event}"), data)
+        callback_function_name = f"_on_{event}"
+        if hasattr(self, callback_function_name):
+            callback_function = getattr(self, callback_function_name)
+            self.executor.submit(
+                execute_function_util,
+                function=lambda: callback_function(data),
+                function_name=callback_function_name)

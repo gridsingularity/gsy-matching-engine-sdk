@@ -101,5 +101,5 @@ def load_client_script(base_setup_path, setup_module_name):
     except D3AException as ex:
         raise click.BadOptionUsage(ex.args[0])
     except ModuleNotFoundError as ex:
-        log.error("Could not find the specified module")
+        log.error("Could not find the specified module: %s", ex.name)
         sys.exit(1)
