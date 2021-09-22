@@ -1,5 +1,4 @@
 from os import system
-import os
 
 
 def before_all(context):
