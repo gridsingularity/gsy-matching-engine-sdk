@@ -1,0 +1,15 @@
+[run]
+branch = True
+source = myco_api_client
+parallel = True
+
+omit =
+    */setups/*
+    .tox/*
+    unit_tests/*
+[report]
+omit =
+    */setups/*
+    .tox/*
+    unit_tests/*
+show_missing = true
