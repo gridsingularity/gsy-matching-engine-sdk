@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import uuid
+from typing import Optional
 
 from d3a_interface.data_classes import Offer, BidOfferMatch, Bid
 from pendulum import DateTime
@@ -26,95 +27,80 @@ from myco_api_client.matching_algorithms.preferred_partners_algorithm import (
 
 
 class TestPreferredPartnersMatchingAlgorithm:
+
+    @staticmethod
+    def offer_factory(additional_data: dict = None):
+        additional_data = additional_data or {}
+        return Offer(
+            **{"id": str(uuid.uuid4()),
+               "time": DateTime.now(),
+               "price": 10,
+               "energy": 30,
+               "seller": "seller",
+               "seller_id": "seller_id",
+               "seller_origin": "seller",
+               "seller_origin_id": "seller_id",
+               **additional_data})
+
+    @staticmethod
+    def bid_factory(additional_data: Optional[dict] = None):
+        additional_data = additional_data or {}
+        return Bid(
+            **{"id": str(uuid.uuid4()),
+               "time": DateTime.now(),
+               "price": 10,
+               "energy": 30,
+               "buyer": "buyer",
+               "buyer_id": "buyer_id",
+               "buyer_origin": "buyer",
+               "buyer_origin_id": "buyer_id",
+               **additional_data})
+
     def test_perform_trading_partners_matching(self):
-        bid = Bid(**{
-            "id": uuid.uuid4(),
-            "time": DateTime.now(),
-            "price": 10,
-            "energy": 30,
-            "original_price": 8,
-            "attributes": {},
-            "requirements": [{"trading_partners": ["seller-1"]}],
-            "buyer": "buyer"
-        }).serializable_dict()
-        offer = Offer(**{
-            "id": uuid.uuid4(),
-            "time": DateTime.now(),
-            "price": 10,
-            "energy": 30,
-            "original_price": 8,
-            "attributes": {},
-            "requirements": [],
-            "seller": "seller",
-            "seller_id": "seller-1"
-        }).serializable_dict()
+        offer = self.offer_factory().serializable_dict()
+        bid = self.bid_factory(
+            {"requirements": [{"trading_partners": [offer["seller_id"]]}]}
+        ).serializable_dict()
         assert PreferredPartnersMatchingAlgorithm.perform_trading_partners_matching(
             market_id="market", bids=[bid], offers=[offer]) == [
                    BidOfferMatch(bids=[bid], offers=[offer],
                                  market_id="market",
-                                 trade_rate=10 / 30,
+                                 trade_rate=bid["energy_rate"],
                                  selected_energy=30).serializable_dict()]
 
     def test_get_energy_and_clearing_rate(self):
-        offer = Offer(**{
-            "id": uuid.uuid4(),
-            "time": DateTime.now(),
-            "price": 10,
-            "energy": 30,
-            "original_price": 8,
-            "attributes": {},
-            "requirements": [],
-            "seller": "seller"
-        })
+        offer = self.offer_factory().serializable_dict()
         assert PreferredPartnersMatchingAlgorithm.get_energy_and_clearing_rate(
-            offer_bid=offer.serializable_dict(), offer_bid_requirement={}
-        ) == (30, 10 / 30)
+            offer_bid=offer, offer_bid_requirement={}
+        ) == (offer["energy"], offer["energy_rate"])
 
         offer_bid_requirement = {"energy": 10, "price": 1}
         assert PreferredPartnersMatchingAlgorithm.get_energy_and_clearing_rate(
-            offer_bid=offer.serializable_dict(), offer_bid_requirement=offer_bid_requirement
-        ) == (10, 1)
+            offer_bid=offer, offer_bid_requirement=offer_bid_requirement
+        ) == (offer_bid_requirement["energy"], offer_bid_requirement["price"])
 
     def test_get_actors_mapping(self):
         offers = [
-            Offer(**{
-                "id": f"id-{index}",
-                "time": DateTime.now(),
-                "price": 10,
-                "energy": 30,
-                "original_price": 8,
-                "attributes": {},
-                "requirements": [],
-                "seller_id": f"seller_id-{index}",
-                "seller": f"seller-{index}"
-            }).serializable_dict() for index in range(3)
-        ]
+            self.offer_factory({"id": f"id-{index}",
+                                "seller_id": f"seller_id-{index}",
+                                "seller": f"seller-{index}",
+                                "seller_origin_id": f"seller_id-{index}",
+                                "seller_origin": f"seller-{index}"}).serializable_dict()
+            for index in range(3)]
+        offers.append(self.offer_factory({
+            "seller_id": offers[0]["seller_id"],
+            "seller_origin_id": "different_origin_id",
+            "seller_origin": "different_origin"}).serializable_dict())
         assert PreferredPartnersMatchingAlgorithm.get_actors_mapping(offers) == {
-            "seller_id-0": [offers[0]],
+            "seller_id-0": [offers[0], offers[3]],
             "seller_id-1": [offers[1]],
-            "seller_id-2": [offers[2]]}
+            "seller_id-2": [offers[2]],
+            "different_origin_id": [offers[3]]}
 
     def test_can_bid_offer_be_matched(self):
-        bid = Bid(**{
-            "id": uuid.uuid4(),
-            "time": DateTime.now(),
-            "price": 10,
-            "energy": 30,
-            "original_price": 8,
-            "attributes": {},
-            "requirements": [{"energy_type": ["green"]}],
-            "buyer": "buyer"
-        }).serializable_dict()
-        offer = Offer(**{
-            "id": uuid.uuid4(),
-            "time": DateTime.now(),
-            "price": 10,
-            "energy": 30,
-            "original_price": 8,
-            "attributes": {},
-            "requirements": [],
-            "seller": "seller"
-        }).serializable_dict()
+        bid = self.bid_factory(
+            {"requirements": [{"energy_type": ["green"]}]}).serializable_dict()
+        offer = self.offer_factory().serializable_dict()
         assert PreferredPartnersMatchingAlgorithm.can_bid_offer_be_matched(
             bid=bid,
             offer=offer,

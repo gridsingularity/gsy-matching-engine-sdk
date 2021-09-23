@@ -72,7 +72,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                     cls.get_energy_and_clearing_rate(bid, bid_requirement))
                 preferred_offers = []
                 for partner in bid_requirement.get("trading_partners") or []:
-                    preferred_offers.extend(offers_mapping.get(partner))
+                    preferred_offers.extend(offers_mapping.get(partner) or [])
                 for offer in preferred_offers:
                     if (offer.get("id") in already_selected_offers or
                             offer.get("seller") == bid.get("buyer")):
@@ -148,7 +148,8 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                 if bid_offer[id_selector] not in mapping:
                     mapping[bid_offer[id_selector]] = []
                 mapping[bid_offer[id_selector]].append(bid_offer)
-            if bid_offer[origin_id_selector]:
+            if (bid_offer[origin_id_selector]
+                    and bid_offer[origin_id_selector] != bid_offer[id_selector]):
                 if bid_offer[origin_id_selector] not in mapping:
                     mapping[bid_offer[origin_id_selector]] = []
                 mapping[bid_offer[origin_id_selector]].append(bid_offer)
