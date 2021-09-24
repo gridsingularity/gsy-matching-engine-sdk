@@ -19,7 +19,7 @@ class MycoMatcherClientInterface(ABC):
 
     @abstractmethod
     def on_offers_bids_response(self, data: Dict):
-        """This method can be overridden to perform specific actions after bids/offers response is returned.
+        """Perform specific actions after bids/offers response is returned.
 
         Args:
             data: Contains data of the open offers/ bids in the format:

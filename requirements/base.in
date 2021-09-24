@@ -1,9 +1,7 @@
-behave
 click
 click-default-group
 colorlog
 fabric3
-pytest
 redis
 requests
 tox
