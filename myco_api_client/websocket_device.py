@@ -1,5 +1,7 @@
 import logging
 
+from d3a_interface.client_connections.utils import log_market_progression
+
 
 class WebsocketMessageReceiver:
     def __init__(self, rest_client):
@@ -15,6 +17,7 @@ class WebsocketMessageReceiver:
 
         """
         event = message.get("event")
+        log_market_progression(message)
         if event and hasattr(self.client, f"_on_{event}"):
             getattr(self.client, f"_on_{event}")(message)
 
