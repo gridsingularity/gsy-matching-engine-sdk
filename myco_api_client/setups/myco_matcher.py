@@ -16,7 +16,6 @@ class MycoMatcher(base_matcher):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_finished = False
-        self.errors = 0
 
     def on_market_cycle(self, data):
         pass
