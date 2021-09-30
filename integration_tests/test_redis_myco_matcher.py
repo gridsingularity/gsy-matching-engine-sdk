@@ -45,6 +45,7 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
             "H1 Storage2", "H1 PV1", "H1 PV2", "House 2", "H2 General Load1",
             "H2 Storage1", "H2 PV", "Cell Tower", "Market Maker"
         }
-        if not (data.get("area_map") and set(data["area_map"].values()) == area_set):
+        print(f"data: {data}")
+        if not (data.get("area_mapping") and set(data["area_mapping"].values()) == area_set):
             self.errors += 1
         self.called_events.add("on_area_map_response")
