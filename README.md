@@ -47,17 +47,18 @@ The following parameters can be set via the CLI:
 - `domain-name` --> D3A domain URL
 - `web-socket` --> D3A websocket URL
 - `simulation-id` --> UUID of the collaboration or Canary Network (CN)
-
+- `run-on-redis` --> This flag can be set for local testing of the API client, where no user authentication is required. 
+  For that, a locally running redis server and d3a simulation are needed.
 #### Examples
 - For local testing of the API client:
   ```
-  myco --log-level ERROR run --setup redis_base_matcher_setup --run-on-redis
+  myco --log-level ERROR run --setup redis_myco_matcher --run-on-redis
   ```
 - For testing your api client script on remote server hosting d3a's collaboration/CNs.
     - If user's client script resides on `myco_api_client/setups`
     
   ```
-    myco run -u <username> -p <password> --setup base_matcher_setup -s <simulation-uuid> ...
+    myco run -u <username> -p <password> --setup myco_matcher -s <simulation-uuid> ...
     ```
     
     - If user's client script resides on a different directory, then its path needs to be set via `--base-setup-path`

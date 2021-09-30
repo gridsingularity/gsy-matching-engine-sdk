@@ -74,9 +74,11 @@ _setup_modules = iterate_over_all_modules(modules_path)
               type=str, help="D3A websocket URL")
 @click.option("-s", "--simulation-id", type=str, default=None,
               help="Simulation id")
+@click.option('--run-on-redis', is_flag=True, default=False,
+              help="Start the client using the Redis API")
 def run(base_setup_path, setup_module_name,
         username, password, domain_name,
-        web_socket, simulation_id):
+        web_socket, simulation_id, run_on_redis):
     if username is not None:
         os.environ["API_CLIENT_USERNAME"] = username
     if password is not None:
@@ -87,6 +89,7 @@ def run(base_setup_path, setup_module_name,
         web_socket if web_socket else websocket_domain_name_from_env())
     os.environ["MYCO_CLIENT_SIMULATION_ID"] = (
         simulation_id if simulation_id else simulation_id_from_env())
+    os.environ["MYCO_CLIENT_RUN_ON_REDIS"] = "true" if run_on_redis else "false"
     load_client_script(base_setup_path, setup_module_name)
 
 
@@ -101,5 +104,5 @@ def load_client_script(base_setup_path, setup_module_name):
     except D3AException as ex:
         raise click.BadOptionUsage(ex.args[0])
     except ModuleNotFoundError as ex:
-        log.error("Could not find the specified module")
+        log.error("Could not find the specified module: %s", ex.name)
         sys.exit(1)
