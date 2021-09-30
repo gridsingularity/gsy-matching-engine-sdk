@@ -3,6 +3,7 @@ import logging
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Dict
 
+from d3a_interface.client_connections.utils import log_market_progression
 from d3a_interface.utils import execute_function_util, wait_until_timeout_blocking
 from redis import StrictRedis
 
@@ -94,6 +95,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
 
     def _on_event_or_response(self, payload: Dict):
         data = json.loads(payload["data"])
+        log_market_progression(data)
         self.executor.submit(
             execute_function_util,
             function=lambda: self.on_event_or_response(data),
