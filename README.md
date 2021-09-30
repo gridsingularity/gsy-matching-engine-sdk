@@ -47,7 +47,8 @@ The following parameters can be set via the CLI:
 - `domain-name` --> D3A domain URL
 - `web-socket` --> D3A websocket URL
 - `simulation-id` --> UUID of the collaboration or Canary Network (CN)
-
+- `run-on-redis` --> This flag can be set for local testing of the API client, where no user authentication is required. 
+  For that, a locally running redis server and d3a simulation are needed.
 #### Examples
 - For local testing of the API client:
   ```
