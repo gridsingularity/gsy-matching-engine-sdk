@@ -32,7 +32,7 @@ def step_impl(context):
     sleep(5)
     context.matcher = TestRedisMycoMatcher()
     sleep(3)
-    context.matcher.request_area_id_name_map()
+    #context.matcher.request_area_id_name_map()
     assert context.matcher.is_finished is False
 
 
@@ -50,7 +50,8 @@ def step_impl(context):
 @then("all events handler are called")
 def step_impl(context):
     assert context.matcher.called_events == {"market_cycle", "tick", "offers_bids_response",
-                                             "event_or_response", "match", "finish"}
+                                             "event_or_response", "match", "finish",
+                                             "on_area_map_response"}
 
 
 @then("the myco client does not report errors")

@@ -96,8 +96,8 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
     def _on_finish(self, data: Dict):
         self.on_finish(data=data)
 
-    def _on_area_map(self, data: Dict):
-        self.on_area_map(data=data)
+    def _on_area_map_response(self, data: Dict):
+        self.on_area_map_response(data=data)
 
     def _on_event_or_response(self, payload: Dict):
         data = json.loads(payload["data"])

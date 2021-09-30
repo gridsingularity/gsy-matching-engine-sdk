@@ -11,6 +11,7 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
         self.is_finished = False
         self.errors = 0
         self.called_events = set()
+        self.request_area_id_name_map()
 
     def on_market_cycle(self, data):
         self.called_events.add("market_cycle")
@@ -38,14 +39,11 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
     def on_event_or_response(self, data):
         self.called_events.add("event_or_response")
 
-    def on_area_map(self, data):
-        area_list = ["Grid", "House 1", "H1 General Load1", "H1 General Load2",
+    def on_area_map_response(self, data):
+        area_set = {"Grid", "House 1", "H1 General Load1", "H1 General Load2",
                      "H1 Storage1", "H1 Storage2", "H1 PV1", "H1 PV2",
                      "House 2", "H2 General Load1", "H2 Storage1", "H2 PV", "Cell Tower",
-                     "Market Maker"]
-        if data == {}:
+                     "Market Maker"}
+        if not (data.get("area_map") and list(data["area_map"].values()) == area_set):
             self.errors += 1
-        expected_area_list = list(data['area_mapp'].values())
-        if expected_area_list != area_list:
-            self.errors += 1
-
+        self.called_events.add("on_area_map_response")

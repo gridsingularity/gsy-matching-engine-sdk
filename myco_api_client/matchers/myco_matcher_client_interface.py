@@ -60,5 +60,5 @@ class MycoMatcherClientInterface(ABC):
     def on_event_or_response(self, data: Dict):
         """Extra handler for all events/responses callbacks."""
 
-    def on_area_map(self, data: Dict):
+    def on_area_map_response(self, data: Dict):
         """Updated Area UUID Name map event handler."""
