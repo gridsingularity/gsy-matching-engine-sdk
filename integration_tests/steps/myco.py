@@ -32,7 +32,6 @@ def step_impl(context):
     sleep(5)
     context.matcher = TestRedisMycoMatcher()
     sleep(3)
-    #context.matcher.request_area_id_name_map()
     assert context.matcher.is_finished is False
 
 
