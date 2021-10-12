@@ -1,12 +1,18 @@
 import logging
+import os
 from time import sleep
 
-from d3a_interface.matching_algorithms import PayAsBidMatchingAlgorithm
-
+from myco_api_client.matchers import RedisBaseMatcher
 from myco_api_client.matchers.base_matcher import BaseMatcher
+from myco_api_client.matching_algorithms import AttributedMatchingAlgorithm
+
+if os.environ["MYCO_CLIENT_RUN_ON_REDIS"] == "true":
+    base_matcher = RedisBaseMatcher
+else:
+    base_matcher = BaseMatcher
 
 
-class MycoMatcher(BaseMatcher):
+class MycoMatcher(base_matcher):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_finished = False
@@ -21,7 +27,7 @@ class MycoMatcher(BaseMatcher):
         matching_data = data.get("bids_offers")
         if not matching_data:
             return
-        recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
+        recommendations = AttributedMatchingAlgorithm.get_matches_recommendations(
             matching_data)
         if recommendations:
             logging.info("Submitting %s recommendations.", len(recommendations))

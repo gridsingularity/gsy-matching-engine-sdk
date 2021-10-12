@@ -3,6 +3,7 @@ import logging
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Dict
 
+from d3a_interface.client_connections.utils import log_market_progression
 from d3a_interface.utils import execute_function_util, wait_until_timeout_blocking
 from redis import StrictRedis
 
@@ -70,6 +71,10 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         data = {"filters": filters}
         self.redis_db.publish(f"{self.redis_channels_prefix}/offers-bids/", json.dumps(data))
 
+    def request_area_id_name_map(self):
+        channel = f"{self.simulation_id}/area-map/"
+        self.redis_db.publish(channel, json.dumps({}))
+
     def _on_offers_bids_response(self, data: Dict):
         self.on_offers_bids_response(data=data)
 
@@ -92,8 +97,12 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
     def _on_finish(self, data: Dict):
         self.on_finish(data=data)
 
+    def _on_area_map_response(self, data: Dict):
+        self.on_area_map_response(data=data)
+
     def _on_event_or_response(self, payload: Dict):
         data = json.loads(payload["data"])
+        log_market_progression(data)
         self.executor.submit(
             execute_function_util,
             function=lambda: self.on_event_or_response(data),
