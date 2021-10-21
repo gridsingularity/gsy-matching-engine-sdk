@@ -62,11 +62,13 @@ class TestPreferredPartnersMatchingAlgorithm:
             {"requirements": [{"trading_partners": [offer["seller_id"]]}]}
         ).serializable_dict()
         assert PreferredPartnersMatchingAlgorithm.perform_trading_partners_matching(
-            market_id="market", bids=[bid], offers=[offer]) == [
+            market_id="market", time_slot="2021-10-06T12:00",
+            bids=[bid], offers=[offer]) == [
                    BidOfferMatch(bids=[bid], offers=[offer],
                                  market_id="market",
                                  trade_rate=bid["energy_rate"],
-                                 selected_energy=30).serializable_dict()]
+                                 selected_energy=30,
+                                 time_slot="2021-10-06T12:00").serializable_dict()]
 
     def test_get_energy_and_clearing_rate(self):
         offer = self.offer_factory().serializable_dict()

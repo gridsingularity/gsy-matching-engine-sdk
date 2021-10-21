@@ -35,17 +35,19 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
     def get_matches_recommendations(
             cls, matching_data: Dict) -> List[BidOfferMatch.serializable_dict]:
         recommendations = []
-        for market_id, data in matching_data.items():
-            if not (data.get("bids") and data.get("offers")):
-                continue
+        for market_id, time_slot_data in matching_data.items():
+            for time_slot, data in time_slot_data.items():
+                if not (data.get("bids") and data.get("offers")):
+                    continue
 
-            recommendations.extend(cls.perform_trading_partners_matching(
-                market_id, bids=data.get("bids"), offers=data.get("offers")))
+                recommendations.extend(cls.perform_trading_partners_matching(
+                    market_id, time_slot, bids=data.get("bids"), offers=data.get("offers")))
         return recommendations
 
     @classmethod
     def perform_trading_partners_matching(
             cls, market_id: str,
+            time_slot: str,
             bids: List[Bid.serializable_dict],
             offers: List[Offer.serializable_dict]) -> List[BidOfferMatch.serializable_dict]:
         """
@@ -92,7 +94,8 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                                 market_id=market_id,
                                 bids=[bid], offers=[offer],
                                 selected_energy=selected_energy,
-                                trade_rate=bid_required_clearing_rate).serializable_dict())
+                                trade_rate=bid_required_clearing_rate,
+                                time_slot=time_slot).serializable_dict())
                         break
                     if bid_offer_pair:
                         break

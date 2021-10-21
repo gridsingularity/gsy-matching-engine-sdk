@@ -23,39 +23,40 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
     def get_matches_recommendations(
             cls, matching_data: Dict[str, Dict]) -> List[BidOfferMatch.serializable_dict]:
         recommendations = []
-        for market_id, data in matching_data.items():
-            bids_mapping = {bid["id"]: bid for bid in data.get("bids")}
-            offers_mapping = {offer["id"]: offer for offer in data.get("offers")}
+        for market_id, time_slot_data in matching_data.items():
+            for time_slot, data in time_slot_data.items():
+                bids_mapping = {bid["id"]: bid for bid in data.get("bids")}
+                offers_mapping = {offer["id"]: offer for offer in data.get("offers")}
 
-            if not (bids_mapping and offers_mapping):
-                continue
-            # Trading partners matching
-            trading_partners_recommendations = (
-                PreferredPartnersMatchingAlgorithm.get_matches_recommendations(
-                    {market_id: data}))
-            recommendations.extend(trading_partners_recommendations)
+                if not (bids_mapping and offers_mapping):
+                    continue
+                # Trading partners matching
+                trading_partners_recommendations = (
+                    PreferredPartnersMatchingAlgorithm.get_matches_recommendations(
+                        {market_id: data}))
+                recommendations.extend(trading_partners_recommendations)
 
-            bids_mapping, offers_mapping = cls._filter_out_consumed_bids_offers(
-                bids_mapping, offers_mapping, trading_partners_recommendations)
+                bids_mapping, offers_mapping = cls._filter_out_consumed_bids_offers(
+                    bids_mapping, offers_mapping, trading_partners_recommendations)
 
-            # Green energy matching
-            green_offers = cls._filter_offers_bids_by_attribute(
-                list(offers_mapping.values()), "energy_type", "PV")
-            green_bids = cls._filter_offers_bids_by_requirement(
-                list(bids_mapping.values()), "energy_type", "PV")
-            green_recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
-                    {market_id: {"bids": green_bids, "offers": green_offers}})
-            recommendations.extend(green_recommendations)
+                # Green energy matching
+                green_offers = cls._filter_offers_bids_by_attribute(
+                    list(offers_mapping.values()), "energy_type", "PV")
+                green_bids = cls._filter_offers_bids_by_requirement(
+                    list(bids_mapping.values()), "energy_type", "PV")
+                green_recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
+                        {market_id: {"bids": green_bids, "offers": green_offers}})
+                recommendations.extend(green_recommendations)
 
-            bids_mapping, offers_mapping = cls._filter_out_consumed_bids_offers(
-                bids_mapping, offers_mapping, green_recommendations)
+                bids_mapping, offers_mapping = cls._filter_out_consumed_bids_offers(
+                    bids_mapping, offers_mapping, green_recommendations)
 
-            # Residual matching
-            residual_recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
-                    {market_id: {
-                        "bids": list(bids_mapping.values()),
-                        "offers": list(offers_mapping.values())}})
-            recommendations.extend(residual_recommendations)
+                # Residual matching
+                residual_recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
+                        {market_id: {
+                            "bids": list(bids_mapping.values()),
+                            "offers": list(offers_mapping.values())}})
+                recommendations.extend(residual_recommendations)
 
         return recommendations
 
