@@ -6,3 +6,4 @@ redis
 requests
 tox
 websockets
+flake8
