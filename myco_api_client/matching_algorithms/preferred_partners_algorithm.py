@@ -62,13 +62,13 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
             8. Validate whether the offer/bid can satisfy each other's energy requirements
             9. Create a match recommendation
         """
-        bid_offer_pairs = []
+        order_pairs = []
         bids = sort_list_of_dicts_by_attribute(bids, "energy_rate", True)
         offers = sort_list_of_dicts_by_attribute(offers, "energy_rate", True)
         offers_mapping = cls.get_actors_mapping(offers)
         already_selected_offers = set()
         for bid in bids:
-            bid_offer_pair = None
+            order_pair = None
             for bid_requirement in bid.get("requirements") or []:
                 bid_required_energy, bid_required_clearing_rate = (
                     cls.get_energy_and_clearing_rate(bid, bid_requirement))
@@ -80,7 +80,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                             offer.get("seller") == bid.get("buyer")):
                         continue
                     for offer_requirement in offer.get("requirements") or [{}]:
-                        if not cls.can_bid_offer_be_matched(
+                        if not cls.can_order_be_matched(
                                 bid, offer, bid_requirement, offer_requirement):
                             continue
 
@@ -89,7 +89,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
 
                         selected_energy = min(bid_required_energy, offer_required_energy)
                         already_selected_offers.add(offer.get("id"))
-                        bid_offer_pair = (
+                        order_pair = (
                             BidOfferMatch(
                                 market_id=market_id,
                                 bids=[bid], offers=[offer],
@@ -97,16 +97,16 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                                 trade_rate=bid_required_clearing_rate,
                                 time_slot=time_slot).serializable_dict())
                         break
-                    if bid_offer_pair:
+                    if order_pair:
                         break
-                if bid_offer_pair:
-                    bid_offer_pairs.append(bid_offer_pair)
+                if order_pair:
+                    order_pairs.append(order_pair)
                     break
 
-        return bid_offer_pairs
+        return order_pairs
 
     @classmethod
-    def can_bid_offer_be_matched(
+    def can_order_be_matched(
             cls, bid: Bid.serializable_dict,
             offer: Offer.serializable_dict,
             bid_requirement: Dict, offer_requirement: Dict) -> bool:
@@ -142,37 +142,37 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
         Meant to only be used with input from the same type (Either offers or bids)
         """
         mapping = {}
-        for bid_offer in bids_offers:
+        for order in bids_offers:
             # TODO: refactor Bid and Offer structures to homogenize id and origin selectors
-            id_selector = "buyer_id" if bid_offer["type"] == "Bid" else "seller_id"
+            id_selector = "buyer_id" if order["type"] == "Bid" else "seller_id"
             origin_id_selector = (
-                "buyer_origin_id" if bid_offer["type"] == "Bid" else "seller_origin_id")
-            if bid_offer[id_selector]:
-                if bid_offer[id_selector] not in mapping:
-                    mapping[bid_offer[id_selector]] = []
-                mapping[bid_offer[id_selector]].append(bid_offer)
-            if (bid_offer[origin_id_selector]
-                    and bid_offer[origin_id_selector] != bid_offer[id_selector]):
-                if bid_offer[origin_id_selector] not in mapping:
-                    mapping[bid_offer[origin_id_selector]] = []
-                mapping[bid_offer[origin_id_selector]].append(bid_offer)
+                "buyer_origin_id" if order["type"] == "Bid" else "seller_origin_id")
+            if order[id_selector]:
+                if order[id_selector] not in mapping:
+                    mapping[order[id_selector]] = []
+                mapping[order[id_selector]].append(order)
+            if (order[origin_id_selector]
+                    and order[origin_id_selector] != order[id_selector]):
+                if order[origin_id_selector] not in mapping:
+                    mapping[order[origin_id_selector]] = []
+                mapping[order[origin_id_selector]].append(order)
         return mapping
 
     @classmethod
     def get_energy_and_clearing_rate(
-            cls, offer_bid: BaseBidOffer.serializable_dict,
-            offer_bid_requirement: Dict) -> Tuple[float, float]:
-        """Determine the energy and clearing rate based on an offer_bid + its requirement.
+            cls, order: BaseBidOffer.serializable_dict,
+            order_requirement: Dict) -> Tuple[float, float]:
+        """Determine the energy and clearing rate based on an order + its requirement.
 
         A bid or offer can have energy and clearing rate attributes on both the instance
         and as a special requirement.
         The values in requirement have higher priority in selecting the energy and rate.
 
         Args:
-            offer_bid: a serialized offer or bid structures
-            offer_bid_requirement: specified requirement dictionary for the offer_bid
+            order: a serialized offer or bid structures
+            order_requirement: specified requirement dictionary for the order
         """
-        offer_bid_required_energy = offer_bid_requirement.get("energy") or offer_bid["energy"]
-        offer_bid_required_clearing_rate = (
-                offer_bid_requirement.get("price") or offer_bid["energy_rate"])
-        return offer_bid_required_energy, offer_bid_required_clearing_rate
+        order_required_energy = order_requirement.get("energy") or order["energy"]
+        order_required_clearing_rate = (
+                order_requirement.get("price") or order["energy_rate"])
+        return order_required_energy, order_required_clearing_rate

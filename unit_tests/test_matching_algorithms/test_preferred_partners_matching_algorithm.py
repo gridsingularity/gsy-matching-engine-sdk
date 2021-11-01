@@ -73,13 +73,13 @@ class TestPreferredPartnersMatchingAlgorithm:
     def test_get_energy_and_clearing_rate(self):
         offer = self.offer_factory().serializable_dict()
         assert PreferredPartnersMatchingAlgorithm.get_energy_and_clearing_rate(
-            offer_bid=offer, offer_bid_requirement={}
+            order=offer, order_requirement={}
         ) == (offer["energy"], offer["energy_rate"])
 
-        offer_bid_requirement = {"energy": 10, "price": 1}
+        order_requirement = {"energy": 10, "price": 1}
         assert PreferredPartnersMatchingAlgorithm.get_energy_and_clearing_rate(
-            offer_bid=offer, offer_bid_requirement=offer_bid_requirement
-        ) == (offer_bid_requirement["energy"], offer_bid_requirement["price"])
+            order=offer, order_requirement=order_requirement
+        ) == (order_requirement["energy"], order_requirement["price"])
 
     def test_get_actors_mapping(self):
         offers = [
@@ -99,25 +99,25 @@ class TestPreferredPartnersMatchingAlgorithm:
             "seller_id-2": [offers[2]],
             "different_origin_id": [offers[3]]}
 
-    def test_can_bid_offer_be_matched(self):
+    def test_can_order_be_matched(self):
         bid = self.bid_factory(
             {"requirements": [{"energy_type": ["green"]}]}).serializable_dict()
         offer = self.offer_factory().serializable_dict()
-        assert PreferredPartnersMatchingAlgorithm.can_bid_offer_be_matched(
+        assert PreferredPartnersMatchingAlgorithm.can_order_be_matched(
             bid=bid,
             offer=offer,
             bid_requirement=bid["requirements"][0],
             offer_requirement={}) is False
 
         offer["attributes"] = {"energy_type": "green"}
-        assert PreferredPartnersMatchingAlgorithm.can_bid_offer_be_matched(
+        assert PreferredPartnersMatchingAlgorithm.can_order_be_matched(
             bid=bid,
             offer=offer,
             bid_requirement=bid["requirements"][0],
             offer_requirement={}) is True
 
         offer["energy_rate"] = bid["energy_rate"] + 0.1
-        assert PreferredPartnersMatchingAlgorithm.can_bid_offer_be_matched(
+        assert PreferredPartnersMatchingAlgorithm.can_order_be_matched(
             bid=bid,
             offer=offer,
             bid_requirement=bid["requirements"][0],

@@ -66,14 +66,14 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
             requirement_value: Union[str, int, float]) -> List[Dict]:
         """Return a list of offers or bids which have a requirement == specified value."""
         filtered_list = []
-        for offer_bid in offers_bids:
-            for requirement in offer_bid.get("requirements") or []:
+        for order in offers_bids:
+            for requirement in order.get("requirements") or []:
                 if requirement_key not in requirement:
                     continue
                 if (isinstance(requirement.get(requirement_key), list)
                         and requirement_value in requirement.get(requirement_key)
                         or requirement_value == requirement.get(requirement_key)):
-                    filtered_list.append(offer_bid)
+                    filtered_list.append(order)
                     break
         return filtered_list
 
@@ -83,13 +83,13 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
             attribute_value: Union[str, int, float]) -> List[Dict]:
         """Return a list of offers or bids which have an attribute == specified value."""
         filtered_list = []
-        for offer_bid in offers_bids:
-            if attribute_key not in (offer_bid.get("attributes") or {}):
+        for order in offers_bids:
+            if attribute_key not in (order.get("attributes") or {}):
                 continue
-            if (isinstance(offer_bid["attributes"].get(attribute_key), list)
-                    and attribute_value in offer_bid["attributes"].get(attribute_key)
-                    or attribute_value == offer_bid["attributes"].get(attribute_key)):
-                filtered_list.append(offer_bid)
+            if (isinstance(order["attributes"].get(attribute_key), list)
+                    and attribute_value in order["attributes"].get(attribute_key)
+                    or attribute_value == order["attributes"].get(attribute_key)):
+                filtered_list.append(order)
         return filtered_list
 
     @classmethod
