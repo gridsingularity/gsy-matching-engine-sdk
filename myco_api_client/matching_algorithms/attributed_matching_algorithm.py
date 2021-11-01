@@ -34,19 +34,13 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
                 trading_partners_recommendations = (
                     PreferredPartnersMatchingAlgorithm.get_matches_recommendations(
                         {market_id: data}))
-                recommendations.extend(trading_partners_recommendations)
 
                 bids_mapping, offers_mapping = cls._filter_out_consumed_bids_offers(
                     bids_mapping, offers_mapping, trading_partners_recommendations)
 
                 # Green energy matching
-                green_offers = cls._filter_offers_bids_by_attribute(
-                    list(offers_mapping.values()), "energy_type", "PV")
-                green_bids = cls._filter_offers_bids_by_requirement(
-                    list(bids_mapping.values()), "energy_type", "PV")
-                green_recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
-                        {market_id: {"bids": green_bids, "offers": green_offers}})
-                recommendations.extend(green_recommendations)
+                green_recommendations = cls._perform_green_matching(
+                    market_id, offers_mapping, bids_mapping)
 
                 bids_mapping, offers_mapping = cls._filter_out_consumed_bids_offers(
                     bids_mapping, offers_mapping, green_recommendations)
@@ -56,17 +50,33 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
                         {market_id: {
                             "bids": list(bids_mapping.values()),
                             "offers": list(offers_mapping.values())}})
-                recommendations.extend(residual_recommendations)
+
+                recommendations.extend(
+                    trading_partners_recommendations
+                    + green_recommendations
+                    + residual_recommendations)
 
         return recommendations
 
     @classmethod
-    def _filter_offers_bids_by_requirement(
-            cls, offers_bids: List[Dict], requirement_key: str,
+    def _perform_green_matching(cls, market_id: str,
+                                offers_mapping: Dict,
+                                bids_mapping: Dict) -> List[Dict]:
+        """Check bids that require green energy and match them with valid offers."""
+        green_offers = cls._filter_orders_by_attribute(
+            list(offers_mapping.values()), "energy_type", "PV")
+        green_bids = cls._filter_orders_by_requirement(
+            list(bids_mapping.values()), "energy_type", "PV")
+        return PayAsBidMatchingAlgorithm.get_matches_recommendations(
+            {market_id: {"bids": green_bids, "offers": green_offers}})
+
+    @classmethod
+    def _filter_orders_by_requirement(
+            cls, orders: List[Dict], requirement_key: str,
             requirement_value: Union[str, int, float]) -> List[Dict]:
         """Return a list of offers or bids which have a requirement == specified value."""
         filtered_list = []
-        for order in offers_bids:
+        for order in orders:
             for requirement in order.get("requirements") or []:
                 if requirement_key not in requirement:
                     continue
@@ -78,12 +88,12 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         return filtered_list
 
     @classmethod
-    def _filter_offers_bids_by_attribute(
-            cls, offers_bids: list, attribute_key: str,
+    def _filter_orders_by_attribute(
+            cls, orders: list, attribute_key: str,
             attribute_value: Union[str, int, float]) -> List[Dict]:
         """Return a list of offers or bids which have an attribute == specified value."""
         filtered_list = []
-        for order in offers_bids:
+        for order in orders:
             if attribute_key not in (order.get("attributes") or {}):
                 continue
             if (isinstance(order["attributes"].get(attribute_key), list)
@@ -105,9 +115,3 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
             for offer in recommendation["offers"]:
                 open_offers_mapping.pop(offer["id"], None)
         return open_bids_mapping, open_offers_mapping
-
-
-def test_filter_offers_bids_have_requirement(
-        offers_bids: list, requirement_key: str, requirement_value: Union[str, int, float]):
-    return AttributedMatchingAlgorithm._filter_offers_bids_by_requirement(
-        offers_bids, requirement_key, requirement_value)

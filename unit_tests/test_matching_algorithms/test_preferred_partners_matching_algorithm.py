@@ -61,7 +61,7 @@ class TestPreferredPartnersMatchingAlgorithm:
         bid = self.bid_factory(
             {"requirements": [{"trading_partners": [offer["seller_id"]]}]}
         ).serializable_dict()
-        assert PreferredPartnersMatchingAlgorithm.perform_trading_partners_matching(
+        assert PreferredPartnersMatchingAlgorithm._perform_trading_partners_matching(
             market_id="market", time_slot="2021-10-06T12:00",
             bids=[bid], offers=[offer]) == [
                    BidOfferMatch(bids=[bid], offers=[offer],
@@ -72,12 +72,12 @@ class TestPreferredPartnersMatchingAlgorithm:
 
     def test_get_energy_and_clearing_rate(self):
         offer = self.offer_factory().serializable_dict()
-        assert PreferredPartnersMatchingAlgorithm.get_energy_and_clearing_rate(
+        assert PreferredPartnersMatchingAlgorithm._get_required_energy_and_rate_from_order(
             order=offer, order_requirement={}
         ) == (offer["energy"], offer["energy_rate"])
 
         order_requirement = {"energy": 10, "price": 1}
-        assert PreferredPartnersMatchingAlgorithm.get_energy_and_clearing_rate(
+        assert PreferredPartnersMatchingAlgorithm._get_required_energy_and_rate_from_order(
             order=offer, order_requirement=order_requirement
         ) == (order_requirement["energy"], order_requirement["price"])
 
@@ -93,7 +93,7 @@ class TestPreferredPartnersMatchingAlgorithm:
             "seller_id": offers[0]["seller_id"],
             "seller_origin_id": "different_origin_id",
             "seller_origin": "different_origin"}).serializable_dict())
-        assert PreferredPartnersMatchingAlgorithm.get_actors_mapping(offers) == {
+        assert PreferredPartnersMatchingAlgorithm._get_actor_to_offers_mapping(offers) == {
             "seller_id-0": [offers[0], offers[3]],
             "seller_id-1": [offers[1]],
             "seller_id-2": [offers[2]],

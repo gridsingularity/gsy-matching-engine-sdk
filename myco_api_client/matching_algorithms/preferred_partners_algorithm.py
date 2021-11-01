@@ -40,12 +40,12 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                 if not (data.get("bids") and data.get("offers")):
                     continue
 
-                recommendations.extend(cls.perform_trading_partners_matching(
+                recommendations.extend(cls._perform_trading_partners_matching(
                     market_id, time_slot, bids=data.get("bids"), offers=data.get("offers")))
         return recommendations
 
     @classmethod
-    def perform_trading_partners_matching(
+    def _perform_trading_partners_matching(
             cls, market_id: str,
             time_slot: str,
             bids: List[Bid.serializable_dict],
@@ -62,16 +62,16 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
             8. Validate whether the offer/bid can satisfy each other's energy requirements
             9. Create a match recommendation
         """
-        order_pairs = []
+        orders_pairs = []
         bids = sort_list_of_dicts_by_attribute(bids, "energy_rate", True)
         offers = sort_list_of_dicts_by_attribute(offers, "energy_rate", True)
-        offers_mapping = cls.get_actors_mapping(offers)
+        offers_mapping = cls._get_actor_to_offers_mapping(offers)
         already_selected_offers = set()
         for bid in bids:
-            order_pair = None
+            orders_pair = None
             for bid_requirement in bid.get("requirements") or []:
                 bid_required_energy, bid_required_clearing_rate = (
-                    cls.get_energy_and_clearing_rate(bid, bid_requirement))
+                    cls._get_required_energy_and_rate_from_order(bid, bid_requirement))
                 preferred_offers = []
                 for partner in bid_requirement.get("trading_partners") or []:
                     preferred_offers.extend(offers_mapping.get(partner) or [])
@@ -84,38 +84,40 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                                 bid, offer, bid_requirement, offer_requirement):
                             continue
 
-                        offer_required_energy, offer_required_clearing_rate = (
-                            cls.get_energy_and_clearing_rate(offer, offer_requirement))
+                        offer_required_energy, _ = (
+                            cls._get_required_energy_and_rate_from_order(offer, offer_requirement))
 
                         selected_energy = min(bid_required_energy, offer_required_energy)
                         already_selected_offers.add(offer.get("id"))
-                        order_pair = (
+                        orders_pair = (
                             BidOfferMatch(
                                 market_id=market_id,
                                 bids=[bid], offers=[offer],
                                 selected_energy=selected_energy,
                                 trade_rate=bid_required_clearing_rate,
                                 time_slot=time_slot).serializable_dict())
-                        break
-                    if order_pair:
-                        break
-                if order_pair:
-                    order_pairs.append(order_pair)
-                    break
+                        break  # break the offer requirements loop
+                    if orders_pair:
+                        break  # break the offers loop
+                if orders_pair:
+                    orders_pairs.append(orders_pair)
+                    break  # break the bid requirements loop
 
-        return order_pairs
+        return orders_pairs
 
     @classmethod
     def can_order_be_matched(
             cls, bid: Bid.serializable_dict,
             offer: Offer.serializable_dict,
             bid_requirement: Dict, offer_requirement: Dict) -> bool:
-        """Check if we can match offer & bid taking their requirements into consideration."""
+        """
+        Check if we can match offer & bid taking their selected requirements into consideration.
+        """
 
-        offer_required_energy, offer_required_clearing_rate = cls.get_energy_and_clearing_rate(
+        offer_required_energy, offer_required_clearing_rate = cls._get_required_energy_and_rate_from_order(
             offer, offer_requirement)
 
-        bid_required_energy, bid_required_clearing_rate = cls.get_energy_and_clearing_rate(
+        bid_required_energy, bid_required_clearing_rate = cls._get_required_energy_and_rate_from_order(
             bid, bid_requirement)
         if bid_required_clearing_rate < offer_required_clearing_rate:
             return False
@@ -134,32 +136,25 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
         return True
 
     @staticmethod
-    def get_actors_mapping(
-            bids_offers: List[BaseBidOffer.serializable_dict]
-    ) -> Dict[str, List[BaseBidOffer.serializable_dict]]:
-        """Map buyer/seller ids/origin ids to their offers or bids.
-
-        Meant to only be used with input from the same type (Either offers or bids)
-        """
+    def _get_actor_to_offers_mapping(
+            offers: List[Offer.serializable_dict]
+    ) -> Dict[str, List[Offer.serializable_dict]]:
+        """Map seller ids/origin ids to their offers list."""
         mapping = {}
-        for order in bids_offers:
-            # TODO: refactor Bid and Offer structures to homogenize id and origin selectors
-            id_selector = "buyer_id" if order["type"] == "Bid" else "seller_id"
-            origin_id_selector = (
-                "buyer_origin_id" if order["type"] == "Bid" else "seller_origin_id")
-            if order[id_selector]:
-                if order[id_selector] not in mapping:
-                    mapping[order[id_selector]] = []
-                mapping[order[id_selector]].append(order)
-            if (order[origin_id_selector]
-                    and order[origin_id_selector] != order[id_selector]):
-                if order[origin_id_selector] not in mapping:
-                    mapping[order[origin_id_selector]] = []
-                mapping[order[origin_id_selector]].append(order)
+        for offer in offers:
+            if offer["seller_id"]:
+                if offer["seller_id"] not in mapping:
+                    mapping[offer["seller_id"]] = []
+                mapping[offer["seller_id"]].append(offer)
+            if (offer["seller_origin_id"]
+                    and offer["seller_origin_id"] != offer["seller_id"]):
+                if offer["seller_origin_id"] not in mapping:
+                    mapping[offer["seller_origin_id"]] = []
+                mapping[offer["seller_origin_id"]].append(offer)
         return mapping
 
     @classmethod
-    def get_energy_and_clearing_rate(
+    def _get_required_energy_and_rate_from_order(
             cls, order: BaseBidOffer.serializable_dict,
             order_requirement: Dict) -> Tuple[float, float]:
         """Determine the energy and clearing rate based on an order + its requirement.
