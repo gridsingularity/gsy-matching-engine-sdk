@@ -114,11 +114,11 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
         Check if we can match offer & bid taking their selected requirements into consideration.
         """
 
-        offer_required_energy, offer_required_clearing_rate = cls._get_required_energy_and_rate_from_order(
-            offer, offer_requirement)
+        offer_required_energy, offer_required_clearing_rate = (
+            cls._get_required_energy_and_rate_from_order(offer, offer_requirement))
 
-        bid_required_energy, bid_required_clearing_rate = cls._get_required_energy_and_rate_from_order(
-            bid, bid_requirement)
+        bid_required_energy, bid_required_clearing_rate = (
+            cls._get_required_energy_and_rate_from_order(bid, bid_requirement))
         if bid_required_clearing_rate < offer_required_clearing_rate:
             return False
         if not (RequirementsSatisfiedChecker.is_bid_requirement_satisfied(

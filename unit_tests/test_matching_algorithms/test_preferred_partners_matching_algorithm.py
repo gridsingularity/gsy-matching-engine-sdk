@@ -33,7 +33,7 @@ class TestPreferredPartnersMatchingAlgorithm:
         additional_data = additional_data or {}
         return Offer(
             **{"id": str(uuid.uuid4()),
-               "time": DateTime.now(),
+               "creation_time": DateTime.now(),
                "price": 10,
                "energy": 30,
                "seller": "seller",
@@ -47,7 +47,7 @@ class TestPreferredPartnersMatchingAlgorithm:
         additional_data = additional_data or {}
         return Bid(
             **{"id": str(uuid.uuid4()),
-               "time": DateTime.now(),
+               "creation_time": DateTime.now(),
                "price": 10,
                "energy": 30,
                "buyer": "buyer",
