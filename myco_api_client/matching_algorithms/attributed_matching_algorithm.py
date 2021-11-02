@@ -1,5 +1,22 @@
+"""
+Copyright 2018 Grid Singularity
+This file is part of D3A.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 from copy import deepcopy
-from typing import Dict, Union, List, Tuple
+from typing import Dict, Union, List, Tuple, Iterable
 
 from d3a_interface.data_classes import BidOfferMatch
 from d3a_interface.matching_algorithms import BaseMatchingAlgorithm, PayAsBidMatchingAlgorithm
@@ -25,8 +42,8 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         recommendations = []
         for market_id, time_slot_data in matching_data.items():
             for time_slot, data in time_slot_data.items():
-                bids_mapping = {bid["id"]: bid for bid in data.get("bids")}
-                offers_mapping = {offer["id"]: offer for offer in data.get("offers")}
+                bids_mapping = {bid["id"]: bid for bid in data.get("bids") or []}
+                offers_mapping = {offer["id"]: offer for offer in data.get("offers") or []}
 
                 if not (bids_mapping and offers_mapping):
                     continue
@@ -48,8 +65,8 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
                 # Residual matching
                 residual_recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
                         {market_id: {
-                            "bids": list(bids_mapping.values()),
-                            "offers": list(offers_mapping.values())}})
+                            "bids": bids_mapping.values(),
+                            "offers": offers_mapping.values()}})
 
                 recommendations.extend(
                     trading_partners_recommendations
@@ -66,13 +83,13 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         green_offers = cls._filter_orders_by_attribute(
             list(offers_mapping.values()), "energy_type", "PV")
         green_bids = cls._filter_orders_by_requirement(
-            list(bids_mapping.values()), "energy_type", "PV")
+            bids_mapping.values(), "energy_type", "PV")
         return PayAsBidMatchingAlgorithm.get_matches_recommendations(
             {market_id: {"bids": green_bids, "offers": green_offers}})
 
     @classmethod
     def _filter_orders_by_requirement(
-            cls, orders: List[Dict], requirement_key: str,
+            cls, orders: Iterable, requirement_key: str,
             requirement_value: Union[str, int, float]) -> List[Dict]:
         """Return a list of offers or bids which have a requirement == specified value."""
         filtered_list = []
