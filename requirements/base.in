@@ -1,8 +1,9 @@
+-e git+https://github.com/gridsingularity/d3a-interface@master#egg=d3a_interface
 click
 click-default-group
 colorlog
 fabric3
 redis
 requests
-tox
 websockets
+
