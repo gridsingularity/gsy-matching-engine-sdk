@@ -52,14 +52,14 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
                     PreferredPartnersMatchingAlgorithm.get_matches_recommendations(
                         {market_id: data}))
 
-                bids_mapping, offers_mapping = cls._filter_out_consumed_bids_offers(
+                bids_mapping, offers_mapping = cls._filter_out_consumed_orders(
                     bids_mapping, offers_mapping, trading_partners_recommendations)
 
                 # Green energy matching
                 green_recommendations = cls._perform_green_matching(
                     market_id, offers_mapping, bids_mapping)
 
-                bids_mapping, offers_mapping = cls._filter_out_consumed_bids_offers(
+                bids_mapping, offers_mapping = cls._filter_out_consumed_orders(
                     bids_mapping, offers_mapping, green_recommendations)
 
                 # Residual matching
@@ -120,7 +120,7 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         return filtered_list
 
     @classmethod
-    def _filter_out_consumed_bids_offers(
+    def _filter_out_consumed_orders(
             cls, bids_mapping: Dict[str, Dict], offers_mapping: Dict[str, Dict],
             recommendations: List[BidOfferMatch.serializable_dict]) -> Tuple[Dict, Dict]:
         """Return bids/offers lists that are not present in the recommendations yet."""
