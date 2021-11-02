@@ -2,4 +2,5 @@
 
 behave
 coverage
+pre-commit
 pytest-random-order
