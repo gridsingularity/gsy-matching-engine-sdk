@@ -2,9 +2,9 @@ import logging
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Dict
 
-from d3a_interface.client_connections.utils import (
+from gsy_framework.client_connections.utils import (
     RestCommunicationMixin, retrieve_jwt_key_from_server)
-from d3a_interface.client_connections.websocket_connection import WebsocketThread
+from gsy_framework.client_connections.websocket_connection import WebsocketThread
 
 from myco_api_client.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
 from myco_api_client.constants import MAX_WORKER_THREADS

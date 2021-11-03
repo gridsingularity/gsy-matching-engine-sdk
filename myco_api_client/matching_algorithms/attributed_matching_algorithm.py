@@ -1,8 +1,8 @@
 from copy import deepcopy
 from typing import Dict, Union, List, Tuple
 
-from d3a_interface.data_classes import BidOfferMatch
-from d3a_interface.matching_algorithms import BaseMatchingAlgorithm, PayAsBidMatchingAlgorithm
+from gsy_framework.data_classes import BidOfferMatch
+from gsy_framework.matching_algorithms import BaseMatchingAlgorithm, PayAsBidMatchingAlgorithm
 
 
 # TODO: Implement step 1 of the algorithm + add tests

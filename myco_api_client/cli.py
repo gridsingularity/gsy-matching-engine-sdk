@@ -25,8 +25,8 @@ import click
 from click.types import Choice
 from click_default_group import DefaultGroup
 from colorlog.colorlog import ColoredFormatter
-from d3a_interface.exceptions import D3AException
-from d3a_interface.utils import iterate_over_all_modules
+from gsy_framework.exceptions import D3AException
+from gsy_framework.utils import iterate_over_all_modules
 
 import myco_api_client.setups as setups
 from myco_api_client.constants import SETUP_FILE_PATH
