@@ -1,4 +1,4 @@
-"""Setup module for the myco-api-client."""
+"""Setup module for the gsy-myco-sdk."""
 
 import os
 
@@ -28,7 +28,7 @@ with open("README.md", "r", encoding="utf-8") as readme:
 VERSION = __version__
 
 setup(
-    name="myco-api-client",
+    name="gsy-myco-sdk",
     description="Myco API Client",
     long_description=README,
     author="GridSingularity",
@@ -41,7 +41,7 @@ setup(
     install_requires=REQUIREMENTS,
     entry_points={
         "console_scripts": [
-            "myco = gsy_myco_sdk.cli:main",
+            "gsy-myco-sdk = gsy_myco_sdk.cli:main",
         ]
     },
     zip_safe=False,

@@ -24,8 +24,8 @@ from logging import getLogger
 import click
 from click.types import Choice
 from click_default_group import DefaultGroup
-from colorlog.colorlog import ColoredFormatter
-from gsy_framework.exceptions import D3AException
+from colorlog import ColoredFormatter
+from gsy_framework.exceptions import GSyException
 from gsy_framework.utils import iterate_over_all_modules
 
 import gsy_myco_sdk.setups as setups
@@ -36,8 +36,11 @@ from gsy_myco_sdk.utils import (
 
 log = getLogger(__name__)
 
+modules_path = setups.__path__ if SETUP_FILE_PATH is None else [SETUP_FILE_PATH, ]
+_setup_modules = iterate_over_all_modules(modules_path)
 
-@click.group(name="myco-api-client", cls=DefaultGroup, default="run", default_if_no_args=True,
+
+@click.group(name="gsy-myco-sdk", cls=DefaultGroup, default="run", default_if_no_args=True,
              context_settings={"max_content_width": 120})
 @click.option("-l", "--log-level", type=Choice(list(logging._nameToLevel.keys())), default="ERROR",
               show_default=True, help="Log level")
@@ -54,10 +57,6 @@ def main(log_level):
     root_logger = logging.getLogger()
     root_logger.setLevel(log_level)
     root_logger.addHandler(handler)
-
-
-modules_path = setups.__path__ if SETUP_FILE_PATH is None else [SETUP_FILE_PATH, ]
-_setup_modules = iterate_over_all_modules(modules_path)
 
 
 @main.command()
@@ -96,12 +95,12 @@ def run(base_setup_path, setup_module_name,
 def load_client_script(base_setup_path, setup_module_name):
     try:
         if base_setup_path is None:
-            importlib.import_module(f"myco_api_client.setups.{setup_module_name}")
+            importlib.import_module(f"gsy_myco_sdk.setups.{setup_module_name}")
         else:
             sys.path.append(base_setup_path)
             importlib.import_module(setup_module_name)
 
-    except D3AException as ex:
+    except GSyException as ex:
         raise click.BadOptionUsage(ex.args[0])
     except ModuleNotFoundError as ex:
         log.error("Could not find the specified module: %s", ex.name)

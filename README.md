@@ -1,6 +1,6 @@
-# Myco API Client
+# GSY Myco SDK
 ## Table of Content
-- [Myco API Client](#myco-api-client)
+- [GSY Myco SDK](#gsy-myco-sdk)
   * [Overview](#overview)
   * [Installation Instructions](#installation-instructions)
   * [How to use the Client](#how-to-use-the-client)
@@ -11,11 +11,11 @@
 
 ## Overview
 
-Myco API client is responsible for communicating with a running collaboration of D3A. The client uses 
-the API of the D3A external connections in order to be able to dynamically connect to the simulated 
-electrical grid, query the open bids/offers and post trading recommendations back to D3A.
+GSY Myco SDK is responsible for communicating with a running collaboration of GSy Exchange. The client uses
+the API of the GSy Exchange external connections in order to be able to dynamically connect to the simulated
+electrical grid, query the open bids/offers and post trading recommendations back to GSy Exchange.
 
-For local test runs of D3A Redis (https://redis.io/) is used as communication protocol. 
+For local test runs of GSy Exchange Redis (https://redis.io/) is used as communication protocol.
 In the following commands for the local test run are marked with `LOCAL`. 
 
 For communication with collaborations or canary networks on https://d3a.io, a RESTful API is used.
@@ -23,10 +23,10 @@ In the following commands for the connection via the REST API are marked with `R
 
 ## Installation Instructions
 
-Installation of myco-api-client using pip:
+Installation of gsy-myco-sdk using pip:
 
 ```
-pip install git+https://github.com/gridsingularity/myco-api-client.git
+pip install git+https://github.com/faizan2590/gsy-myco-sdk.git
 ```
 ---
 
@@ -40,22 +40,22 @@ myco run --help
 ```
 
 The following parameters can be set via the CLI:
-- `base-setup-path` --> Path where user's client script resides, otherwise `myco_api_client/setups` is used.
+- `base-setup-path` --> Path where user's client script resides, otherwise `gsy_myco_sdk/setups` is used.
 - `setup` --> Name of user's API client module/script.
 - `username` --> Username of agent authorized to communicate with respective collaboration or Canary Network (CN).
 - `password` --> Password of respective agent
-- `domain-name` --> D3A domain URL
-- `web-socket` --> D3A websocket URL
+- `domain-name` --> GSy Exchange domain URL
+- `web-socket` --> GSy Exchange websocket URL
 - `simulation-id` --> UUID of the collaboration or Canary Network (CN)
 - `run-on-redis` --> This flag can be set for local testing of the API client, where no user authentication is required. 
-  For that, a locally running redis server and d3a simulation are needed.
+  For that, a locally running redis server and GSy Exchange simulation are needed.
 #### Examples
 - For local testing of the API client:
   ```
   myco --log-level ERROR run --setup redis_myco_matcher --run-on-redis
   ```
-- For testing your api client script on remote server hosting d3a's collaboration/CNs.
-    - If user's client script resides on `myco_api_client/setups`
+- For testing your api client script on remote server hosting GSy Exchange's collaboration/CNs.
+    - If user's client script resides on `gsy_myco_sdk/setups`
     
   ```
     myco run -u <username> -p <password> --setup myco_matcher -s <simulation-uuid> ...
@@ -117,7 +117,7 @@ The constructor of the API class can connect and register automatically to a run
     The bids_offers response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm and fires a call to submit_matches()
 
   
-- Posts the trading bid/offer pairs recommendations back to d3a, can be called from the overridden on_offers_bids_response: 
+- Posts the trading bid/offer pairs recommendations back to GSy Exchange, can be called from the overridden on_offers_bids_response:
 
     ```python
     def on_offers_bids_response(self, data):
