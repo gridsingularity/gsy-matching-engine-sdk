@@ -103,9 +103,11 @@ The constructor of the API class can connect and register automatically to a run
 - Fire a request to get filtered open bids/offers in the simulation: 
 
     ```python
-    from myco_api_client.matchers.base_matcher import BaseMatcher
-    matching_client = BaseMatcher()
-    matching_client.request_offers_bids(filters={}) 
+    ```python
+      from gsy_myco_sdk.matchers.base_matcher import BaseMatcher
+      matching_client = BaseMatcher()
+      matching_client.request_offers_bids(filters={}) 
+      ```
     ```
     
     Supported filters include:

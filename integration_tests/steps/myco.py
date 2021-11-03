@@ -23,7 +23,7 @@ def step_impl(context, setup_file: str, d3a_options: str):
     sleep(3)
     system("docker run -d --name d3a-myco-tests.container "
            "--env REDIS_URL=redis://redis.container:6379/ "
-           f"--net integtestnet d3a-tests -l INFO run --setup {setup_file} "
+           f"--net integtestnet gsy-e-tests -l INFO run --setup {setup_file} "
            f"--no-export --seed 0 --enable-external-connection {d3a_options} ")
 
 

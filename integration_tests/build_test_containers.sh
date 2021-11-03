@@ -2,7 +2,7 @@
 
 set -e
 
-D3A_IMAGE_TAG="d3a-tests"
+D3A_IMAGE_TAG="gsy-e-tests"
 
 if [[ "$(docker images -q ${D3A_IMAGE_TAG} 2> /dev/null)" == "" ]]; then
   echo "Building d3a image ..." && \

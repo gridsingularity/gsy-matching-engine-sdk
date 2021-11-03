@@ -28,9 +28,9 @@ from colorlog.colorlog import ColoredFormatter
 from gsy_framework.exceptions import D3AException
 from gsy_framework.utils import iterate_over_all_modules
 
-import myco_api_client.setups as setups
-from myco_api_client.constants import SETUP_FILE_PATH
-from myco_api_client.utils import (
+import gsy_myco_sdk.setups as setups
+from gsy_myco_sdk.constants import SETUP_FILE_PATH
+from gsy_myco_sdk.utils import (
     simulation_id_from_env, domain_name_from_env,
     websocket_domain_name_from_env)
 

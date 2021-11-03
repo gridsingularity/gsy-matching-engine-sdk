@@ -6,12 +6,12 @@ from gsy_framework.client_connections.utils import (
     RestCommunicationMixin, retrieve_jwt_key_from_server)
 from gsy_framework.client_connections.websocket_connection import WebsocketThread
 
-from myco_api_client.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
-from myco_api_client.constants import MAX_WORKER_THREADS
-from myco_api_client.utils import (
+from gsy_myco_sdk.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
+from gsy_myco_sdk.constants import MAX_WORKER_THREADS
+from gsy_myco_sdk.utils import (
     simulation_id_from_env, domain_name_from_env, websocket_domain_name_from_env,
     )
-from myco_api_client.websocket_device import WebsocketMessageReceiver
+from gsy_myco_sdk.websocket_device import WebsocketMessageReceiver
 
 
 class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):

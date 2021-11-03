@@ -4,7 +4,7 @@ import os
 
 from setuptools import find_packages, setup
 
-from myco_api_client import __version__
+from gsy_myco_sdk import __version__
 
 BRANCH = os.environ.get("BRANCH", "feature/D3ASIM-3669")
 
@@ -36,12 +36,12 @@ setup(
     url="https://github.com/faizan2590/gsy-myco-sdk",
     version=VERSION,
     packages=find_packages(where=".", exclude=["tests"]),
-    package_dir={"myco_api_client": "myco_api_client"},
+    package_dir={"gsy_myco_sdk": "gsy_myco_sdk"},
     package_data={},
     install_requires=REQUIREMENTS,
     entry_points={
         "console_scripts": [
-            "myco = myco_api_client.cli:main",
+            "myco = gsy_myco_sdk.cli:main",
         ]
     },
     zip_safe=False,
