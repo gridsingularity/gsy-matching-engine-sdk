@@ -80,7 +80,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                             offer.get("seller") == bid.get("buyer")):
                         continue
                     for offer_requirement in offer.get("requirements") or [{}]:
-                        if not cls.can_order_be_matched(
+                        if not cls._can_order_be_matched(
                                 bid, offer, bid_requirement, offer_requirement):
                             continue
 
@@ -106,7 +106,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
         return orders_pairs
 
     @classmethod
-    def can_order_be_matched(
+    def _can_order_be_matched(
             cls, bid: Bid.serializable_dict,
             offer: Offer.serializable_dict,
             bid_requirement: Dict, offer_requirement: Dict) -> bool:
