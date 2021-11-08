@@ -41,7 +41,7 @@ def step_impl(context):
     # placing bids and offers on every market cycle.
     # Should stop if an error occurs or if the simulation has finished
     counter = 0
-    while context.matcher.errors == 0 and not context.matcher.is_finished:
+    while context.matcher.errors == 0 and not context.matcher.is_finished and counter < 150:
         sleep(3)
         counter += 3
 
