@@ -168,6 +168,9 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
             order_requirement: specified requirement dictionary for the order
         """
         order_required_energy = order_requirement.get("energy") or order["energy"]
-        order_required_clearing_rate = (
-                order_requirement.get("price") or order["energy_rate"])
+        if "price" in order_requirement:
+            order_required_clearing_rate = (
+                order_requirement.get("price") / order_required_energy)
+        else:
+            order_required_clearing_rate = order["energy_rate"]
         return order_required_energy, order_required_clearing_rate

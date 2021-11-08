@@ -34,6 +34,7 @@ class TestPreferredPartnersMatchingAlgorithm:
         return Offer(
             **{"id": str(uuid.uuid4()),
                "creation_time": DateTime.now(),
+               "time_slot": DateTime.now(),
                "price": 10,
                "energy": 30,
                "seller": "seller",
@@ -48,6 +49,7 @@ class TestPreferredPartnersMatchingAlgorithm:
         return Bid(
             **{"id": str(uuid.uuid4()),
                "creation_time": DateTime.now(),
+               "time_slot": DateTime.now(),
                "price": 10,
                "energy": 30,
                "buyer": "buyer",
@@ -78,8 +80,8 @@ class TestPreferredPartnersMatchingAlgorithm:
 
         order_requirement = {"energy": 10, "price": 1}
         assert PreferredPartnersMatchingAlgorithm._get_required_energy_and_rate_from_order(
-            order=offer, order_requirement=order_requirement
-        ) == (order_requirement["energy"], order_requirement["price"])
+            order=offer, order_requirement=order_requirement) == (
+            order_requirement["energy"], order_requirement["price"] / order_requirement["energy"])
 
     def test_get_actors_mapping(self):
         offers = [
