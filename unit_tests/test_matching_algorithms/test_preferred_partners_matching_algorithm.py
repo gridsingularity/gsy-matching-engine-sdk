@@ -27,9 +27,10 @@ from myco_api_client.matching_algorithms.preferred_partners_algorithm import (
 
 
 class TestPreferredPartnersMatchingAlgorithm:
-
+    """Tester class for the PreferredPartnersMatchingAlgorithm."""
     @staticmethod
-    def offer_factory(additional_data: dict = None):
+    def offer_factory(additional_data: Optional[dict] = None):
+        """Create and return an offer object from default and input values."""
         additional_data = additional_data or {}
         return Offer(
             **{"id": str(uuid.uuid4()),
@@ -45,6 +46,7 @@ class TestPreferredPartnersMatchingAlgorithm:
 
     @staticmethod
     def bid_factory(additional_data: Optional[dict] = None):
+        """Create and return a bid object from default and input values."""
         additional_data = additional_data or {}
         return Bid(
             **{"id": str(uuid.uuid4()),
@@ -58,14 +60,19 @@ class TestPreferredPartnersMatchingAlgorithm:
                "buyer_origin_id": "buyer_id",
                **additional_data})
 
-    def test_perform_trading_partners_matching(self):
+    def test_get_matches_recommendations(self):
+        """Test the main interface of the algorithm.
+         Pass supported format data and receive correct results
+         """
         offer = self.offer_factory().serializable_dict()
         bid = self.bid_factory(
             {"requirements": [{"trading_partners": [offer["seller_id"]]}]}
         ).serializable_dict()
-        assert PreferredPartnersMatchingAlgorithm._perform_trading_partners_matching(
-            market_id="market", time_slot="2021-10-06T12:00",
-            bids=[bid], offers=[offer]) == [
+        data = {"market": {"2021-10-06T12:00": {
+            "bids": [bid], "offers": [offer]
+        }}}
+        assert PreferredPartnersMatchingAlgorithm.get_matches_recommendations(
+            data) == [
                    BidOfferMatch(bids=[bid], offers=[offer],
                                  market_id="market",
                                  trade_rate=bid["energy_rate"],
@@ -105,21 +112,21 @@ class TestPreferredPartnersMatchingAlgorithm:
         bid = self.bid_factory(
             {"requirements": [{"energy_type": ["green"]}]}).serializable_dict()
         offer = self.offer_factory().serializable_dict()
-        assert PreferredPartnersMatchingAlgorithm.can_order_be_matched(
+        assert PreferredPartnersMatchingAlgorithm._can_order_be_matched(
             bid=bid,
             offer=offer,
             bid_requirement=bid["requirements"][0],
             offer_requirement={}) is False
 
         offer["attributes"] = {"energy_type": "green"}
-        assert PreferredPartnersMatchingAlgorithm.can_order_be_matched(
+        assert PreferredPartnersMatchingAlgorithm._can_order_be_matched(
             bid=bid,
             offer=offer,
             bid_requirement=bid["requirements"][0],
             offer_requirement={}) is True
 
         offer["energy_rate"] = bid["energy_rate"] + 0.1
-        assert PreferredPartnersMatchingAlgorithm.can_order_be_matched(
+        assert PreferredPartnersMatchingAlgorithm._can_order_be_matched(
             bid=bid,
             offer=offer,
             bid_requirement=bid["requirements"][0],

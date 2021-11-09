@@ -41,7 +41,7 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
             cls, matching_data: Dict[str, Dict]) -> List[BidOfferMatch.serializable_dict]:
         recommendations = []
         for market_id, time_slot_data in matching_data.items():
-            for time_slot, data in time_slot_data.items():
+            for data in time_slot_data.values():
                 bids_mapping = {bid["id"]: bid for bid in data.get("bids") or []}
                 offers_mapping = {offer["id"]: offer for offer in data.get("offers") or []}
 
