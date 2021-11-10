@@ -1,7 +1,7 @@
 import os
 
 
-from myco_api_client.constants import DEFAULT_DOMAIN_NAME, DEFAULT_WEBSOCKET_DOMAIN, \
+from gsy_myco_sdk.constants import DEFAULT_DOMAIN_NAME, DEFAULT_WEBSOCKET_DOMAIN, \
     MYCO_CLIENT_SIMULATION_ID
 
 

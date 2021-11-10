@@ -1,6 +1,6 @@
 """
 Copyright 2018 Grid Singularity
-This file is part of D3A.
+This file is part of GSy Myco SDK.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,19 +25,22 @@ import click
 from click.types import Choice
 from click_default_group import DefaultGroup
 from colorlog import ColoredFormatter
-from d3a_interface.exceptions import D3AException
-from d3a_interface.utils import iterate_over_all_modules
+from gsy_framework.exceptions import GSyException
+from gsy_framework.utils import iterate_over_all_modules
 
-import myco_api_client.setups as setups
-from myco_api_client.constants import SETUP_FILE_PATH
-from myco_api_client.utils import (
+import gsy_myco_sdk.setups as setups
+from gsy_myco_sdk.constants import SETUP_FILE_PATH
+from gsy_myco_sdk.utils import (
     simulation_id_from_env, domain_name_from_env,
     websocket_domain_name_from_env)
 
 log = getLogger(__name__)
 
+modules_path = setups.__path__ if SETUP_FILE_PATH is None else [SETUP_FILE_PATH, ]
+_setup_modules = iterate_over_all_modules(modules_path)
 
-@click.group(name="myco-api-client", cls=DefaultGroup, default="run", default_if_no_args=True,
+
+@click.group(name="gsy-myco-sdk", cls=DefaultGroup, default="run", default_if_no_args=True,
              context_settings={"max_content_width": 120})
 @click.option("-l", "--log-level", type=Choice(list(logging._nameToLevel.keys())), default="ERROR",
               show_default=True, help="Log level")
@@ -56,22 +59,18 @@ def main(log_level):
     root_logger.addHandler(handler)
 
 
-modules_path = setups.__path__ if SETUP_FILE_PATH is None else [SETUP_FILE_PATH, ]
-_setup_modules = iterate_over_all_modules(modules_path)
-
-
 @main.command()
 @click.option("-b", "--base-setup-path", default=None, type=str,
               help="Accept absolute or relative path for matcher script")
 @click.option("--setup", "setup_module_name", default="base_matcher_setup",
               help="Setup module of matcher script. Available modules: [{}]".format(
                   ", ".join(_setup_modules)))
-@click.option("-u", "--username", default=None, type=str, help="D3A username")
-@click.option("-p", "--password", default=None, type=str, help="D3A password")
+@click.option("-u", "--username", default=None, type=str, help="GSy Exchange username")
+@click.option("-p", "--password", default=None, type=str, help="GSy Exchange password")
 @click.option("-d", "--domain-name", default=None,
-              type=str, help="D3A domain URL")
+              type=str, help="GSy Exchange domain URL")
 @click.option("-w", "--web-socket", default=None,
-              type=str, help="D3A websocket URL")
+              type=str, help="GSy Exchange Websocket URL")
 @click.option("-s", "--simulation-id", type=str, default=None,
               help="Simulation id")
 @click.option('--run-on-redis', is_flag=True, default=False,
@@ -96,12 +95,12 @@ def run(base_setup_path, setup_module_name,
 def load_client_script(base_setup_path, setup_module_name):
     try:
         if base_setup_path is None:
-            importlib.import_module(f"myco_api_client.setups.{setup_module_name}")
+            importlib.import_module(f"gsy_myco_sdk.setups.{setup_module_name}")
         else:
             sys.path.append(base_setup_path)
             importlib.import_module(setup_module_name)
 
-    except D3AException as ex:
+    except GSyException as ex:
         raise click.BadOptionUsage(ex.args[0])
     except ModuleNotFoundError as ex:
         log.error("Could not find the specified module: %s", ex.name)

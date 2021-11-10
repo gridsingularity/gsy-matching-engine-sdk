@@ -12,19 +12,19 @@ def step_impl(context):
            "--net integtestnet redis:6.2.5")
 
 
-@given("d3a is started using setup {setup_file} ({d3a_options})")
-def step_impl(context, setup_file: str, d3a_options: str):
-    """Run the d3a container on a specific setup.
+@given("gsy-e is started using setup {setup_file} ({gsye_options})")
+def step_impl(context, setup_file: str, gsye_options: str):
+    """Run the gsy exchange container on a specific setup.
 
     Args:
-        setup_file (str): the setup file for a d3a simulation.
-        d3a_options (str): options to be passed to the d3a run command. E.g.: "-t 1s -d 12h"
+        setup_file (str): the setup file for a simulation.
+        gsye_options (str): options to be passed to the gsy_e run command. E.g.: "-t 1s -d 12h"
     """
     sleep(3)
-    system("docker run -d --name d3a-myco-tests.container "
+    system("docker run -d --name gsye-myco-tests.container "
            "--env REDIS_URL=redis://redis.container:6379/ "
-           f"--net integtestnet d3a-tests -l INFO run --setup {setup_file} "
-           f"--no-export --seed 0 --enable-external-connection {d3a_options} ")
+           f"--net integtestnet gsy-e-tests -l INFO run --setup {setup_file} "
+           f"--no-export --seed 0 --enable-external-connection {gsye_options} ")
 
 
 @when("the myco client is started with redis_base_matcher_setup")

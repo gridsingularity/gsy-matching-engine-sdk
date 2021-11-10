@@ -1,6 +1,6 @@
 import logging
 
-from d3a_interface.client_connections.utils import log_market_progression
+from gsy_framework.client_connections.utils import log_market_progression
 
 
 class WebsocketMessageReceiver:

@@ -1,7 +1,7 @@
 import logging
 
-from d3a_interface.matching_algorithms import PayAsBidMatchingAlgorithm
-from myco_api_client.matchers.redis_base_matcher import RedisBaseMatcher
+from gsy_framework.matching_algorithms import PayAsBidMatchingAlgorithm
+from gsy_myco_sdk.matchers.redis_base_matcher import RedisBaseMatcher
 
 
 class TestRedisMycoMatcher(RedisBaseMatcher):

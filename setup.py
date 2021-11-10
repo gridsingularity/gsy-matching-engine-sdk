@@ -1,10 +1,10 @@
-"""Setup module for the myco-api-client."""
+"""Setup module for the gsy-myco-sdk."""
 
 import os
 
 from setuptools import find_packages, setup
 
-from myco_api_client import __version__
+from gsy_myco_sdk import __version__
 
 BRANCH = os.environ.get("BRANCH", "master")
 
@@ -13,8 +13,8 @@ try:
     with open("requirements/base.txt", encoding="utf-8") as req:
         REQUIREMENTS = [r.partition("#")[0] for r in req if not r.startswith("-e")]
         REQUIREMENTS.extend(
-            ["d3a-interface @ "
-             f"git+https://github.com/gridsingularity/d3a-interface.git@{BRANCH}"])
+            ["gsy-framework @ "
+             f"git+https://github.com/gridsingularity/gsy-framework.git@{BRANCH}"])
 
 except OSError:
     # Shouldn't happen
@@ -28,20 +28,20 @@ with open("README.md", "r", encoding="utf-8") as readme:
 VERSION = __version__
 
 setup(
-    name="myco-api-client",
+    name="gsy-myco-sdk",
     description="Myco API Client",
     long_description=README,
     author="GridSingularity",
     author_email="d3a@gridsingularity.com",
-    url="https://github.com/gridsingularity/myco-api-client",
+    url="https://github.com/faizan2590/gsy-myco-sdk",
     version=VERSION,
     packages=find_packages(where=".", exclude=["tests"]),
-    package_dir={"myco_api_client": "myco_api_client"},
+    package_dir={"gsy_myco_sdk": "gsy_myco_sdk"},
     package_data={},
     install_requires=REQUIREMENTS,
     entry_points={
         "console_scripts": [
-            "myco = myco_api_client.cli:main",
+            "gsy-myco-sdk = gsy_myco_sdk.cli:main",
         ]
     },
     zip_safe=False,

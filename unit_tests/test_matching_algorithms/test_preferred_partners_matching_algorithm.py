@@ -1,6 +1,6 @@
 """
 Copyright 2018 Grid Singularity
-This file is part of D3A.
+This file is part of GSy Myco SDK.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import uuid
 from typing import Optional
 
-from d3a_interface.data_classes import Offer, BidOfferMatch, Bid
+from gsy_framework.data_classes import Offer, BidOfferMatch, Bid
 from pendulum import DateTime
 
 from myco_api_client.matching_algorithms.preferred_partners_algorithm import (

@@ -1,6 +1,6 @@
 """
 Copyright 2018 Grid Singularity
-This file is part of D3A.
+This file is part of GSy Myco SDK.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,11 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Dict, List, Tuple
 
-from d3a_interface.data_classes import BidOfferMatch, BaseBidOffer, Bid, Offer
-from d3a_interface.matching_algorithms import BaseMatchingAlgorithm
-from d3a_interface.matching_algorithms.requirements_validators import (
+from gsy_framework.data_classes import BidOfferMatch, BaseBidOffer, Bid, Offer
+from gsy_framework.matching_algorithms import BaseMatchingAlgorithm
+from gsy_framework.matching_algorithms.requirements_validators import (
     RequirementsSatisfiedChecker)
-from d3a_interface.utils import sort_list_of_dicts_by_attribute
+from gsy_framework.utils import sort_list_of_dicts_by_attribute
 
 
 class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
