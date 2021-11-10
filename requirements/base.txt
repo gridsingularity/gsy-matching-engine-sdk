@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=requirements/base.txt requirements/base.in
 #
--e git+https://github.com/faizan2590/gsy-framework@feature/D3ASIM-3669#egg=gsy_framework
+-e git+https://github.com/gridsingularity/gsy-framework@master#egg=gsy_framework
     # via -r requirements/base.in
 attrs==21.2.0
     # via

@@ -33,14 +33,14 @@ class MycoMatcherClientInterface(ABC):
         """This method will be called when the sent recommendations' response is returned.
 
         Args:
-            data: Response returned after matching recommendations call on d3a
+            data: Response returned after matching recommendations call on exchange
 
         Returns: None
         """
 
     @abstractmethod
     def submit_matches(self, recommended_matches: List[BidOfferMatch.serializable_dict]):
-        """This method is meant to post the recommended_matches to d3a.
+        """This method is meant to post the recommended_matches to exchange.
 
         Args:
             recommended_matches: list of recommended trades List[BidOfferMatch.serializable_dict()

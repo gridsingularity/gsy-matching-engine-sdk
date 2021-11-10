@@ -1,6 +1,6 @@
 """
 Copyright 2018 Grid Singularity
-This file is part of D3A.
+This file is part of GSy Myco SDK.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -65,12 +65,12 @@ def main(log_level):
 @click.option("--setup", "setup_module_name", default="base_matcher_setup",
               help="Setup module of matcher script. Available modules: [{}]".format(
                   ", ".join(_setup_modules)))
-@click.option("-u", "--username", default=None, type=str, help="D3A username")
-@click.option("-p", "--password", default=None, type=str, help="D3A password")
+@click.option("-u", "--username", default=None, type=str, help="GSy Exchange username")
+@click.option("-p", "--password", default=None, type=str, help="GSy Exchange password")
 @click.option("-d", "--domain-name", default=None,
-              type=str, help="D3A domain URL")
+              type=str, help="GSy Exchange domain URL")
 @click.option("-w", "--web-socket", default=None,
-              type=str, help="D3A websocket URL")
+              type=str, help="GSy Exchange Websocket URL")
 @click.option("-s", "--simulation-id", type=str, default=None,
               help="Simulation id")
 @click.option('--run-on-redis', is_flag=True, default=False,

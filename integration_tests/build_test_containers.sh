@@ -2,15 +2,15 @@
 
 set -e
 
-D3A_IMAGE_TAG="gsy-e-tests"
+GSY_E_IMAGE_TAG="gsy-e-tests"
 
-if [[ "$(docker images -q ${D3A_IMAGE_TAG} 2> /dev/null)" == "" ]]; then
-  echo "Building d3a image ..." && \
+if [[ "$(docker images -q ${GSY_E_IMAGE_TAG} 2> /dev/null)" == "" ]]; then
+  echo "Building gsy_e image ..." && \
   rm -rf tests/gsy-e && \
   cd tests/ && \
-  git clone -b feature/D3ASIM-3669 https://github.com/faizan2590/gsy-e.git && \
+  git clone https://github.com/gridsingularity/gsy-e.git && \
   cd gsy-e && \
-  docker build -t ${D3A_IMAGE_TAG} . && \
+  docker build -t ${GSY_E_IMAGE_TAG} . && \
   cd ../ && \
   rm -rf gsy-e/ && \
   cd ../ && \
