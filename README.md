@@ -36,7 +36,7 @@ pip install git+https://github.com/faizan2590/gsy-myco-sdk.git
 In order to get help, please run:
 
 ```
-myco run --help
+gsy-myco-sdk run --help
 ```
 
 The following parameters can be set via the CLI:
@@ -52,19 +52,19 @@ The following parameters can be set via the CLI:
 #### Examples
 - For local testing of the API client:
   ```
-  myco --log-level ERROR run --setup redis_myco_matcher --run-on-redis
+  gsy-myco-sdk --log-level ERROR run --setup redis_myco_matcher --run-on-redis
   ```
 - For testing your api client script on remote server hosting GSy Exchange's collaboration/CNs.
     - If user's client script resides on `gsy_myco_sdk/setups`
     
   ```
-    myco run -u <username> -p <password> --setup myco_matcher -s <simulation-uuid> ...
+    gsy-myco-sdk run -u <username> -p <password> --setup myco_matcher -s <simulation-uuid> ...
     ```
     
     - If user's client script resides on a different directory, then its path needs to be set via `--base-setup-path`
     
   ```
-    myco run -u <username> -p <password> --base-setup-path <absolute/relative-path-to-your-client-script> --setup <name-of-your-script> ...
+    gsy-myco-sdk run -u <username> -p <password> --base-setup-path <absolute/relative-path-to-your-client-script> --setup <name-of-your-script> ...
     ```
 
 ---
