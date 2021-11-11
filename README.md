@@ -1,6 +1,6 @@
-# GSY Myco SDK
+# GSy Myco SDK
 ## Table of Content
-- [GSY Myco SDK](#gsy-myco-sdk)
+- [GSy Myco SDK](#gsy-myco-sdk)
   * [Overview](#overview)
   * [Installation Instructions](#installation-instructions)
   * [How to use the Client](#how-to-use-the-client)
@@ -11,7 +11,7 @@
 
 ## Overview
 
-GSY Myco SDK is responsible for communicating with a running collaboration of GSy Exchange. The client uses
+GSy Myco SDK is responsible for communicating with a running collaboration of GSy Exchange. The client uses
 the API of the GSy Exchange external connections in order to be able to dynamically connect to the simulated
 electrical grid, query the open bids/offers and post trading recommendations back to GSy Exchange.
 
