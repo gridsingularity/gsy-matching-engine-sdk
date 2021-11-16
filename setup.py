@@ -42,6 +42,7 @@ setup(
     entry_points={
         "console_scripts": [
             "gsy-myco-sdk = gsy_myco_sdk.cli:main",
+            "myco = gsy_myco_sdk.cli:main"
         ]
     },
     zip_safe=False,
