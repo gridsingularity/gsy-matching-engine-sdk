@@ -21,7 +21,7 @@ from typing import Dict, Union, List, Tuple, Iterable
 from gsy_framework.data_classes import BidOfferMatch
 from gsy_framework.matching_algorithms import BaseMatchingAlgorithm, PayAsBidMatchingAlgorithm
 
-from myco_api_client.matching_algorithms.preferred_partners_algorithm import (
+from gsy_myco_sdk.matching_algorithms.preferred_partners_algorithm import (
     PreferredPartnersMatchingAlgorithm)
 
 
@@ -41,7 +41,7 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
             cls, matching_data: Dict[str, Dict]) -> List[BidOfferMatch.serializable_dict]:
         recommendations = []
         for market_id, time_slot_data in matching_data.items():
-            for data in time_slot_data.values():
+            for time_slot, data in time_slot_data.items():
                 bids_mapping = {bid["id"]: bid for bid in data.get("bids") or []}
                 offers_mapping = {offer["id"]: offer for offer in data.get("offers") or []}
 
@@ -50,23 +50,23 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
                 # Trading partners matching
                 trading_partners_recommendations = (
                     PreferredPartnersMatchingAlgorithm.get_matches_recommendations(
-                        {market_id: data}))
+                        {market_id: {time_slot: data}}))
 
                 bids_mapping, offers_mapping = cls._filter_out_consumed_orders(
                     bids_mapping, offers_mapping, trading_partners_recommendations)
 
                 # Green energy matching
                 green_recommendations = cls._perform_green_matching(
-                    market_id, offers_mapping, bids_mapping)
+                    market_id, time_slot, offers_mapping, bids_mapping)
 
                 bids_mapping, offers_mapping = cls._filter_out_consumed_orders(
                     bids_mapping, offers_mapping, green_recommendations)
 
                 # Residual matching
                 residual_recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
-                        {market_id: {
+                        {market_id: {time_slot: {
                             "bids": bids_mapping.values(),
-                            "offers": offers_mapping.values()}})
+                            "offers": offers_mapping.values()}}})
 
                 recommendations.extend(
                     trading_partners_recommendations
@@ -77,6 +77,7 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
 
     @classmethod
     def _perform_green_matching(cls, market_id: str,
+                                time_slot: str,
                                 offers_mapping: Dict,
                                 bids_mapping: Dict) -> List[Dict]:
         """Check bids that require green energy and match them with valid offers."""
@@ -85,7 +86,7 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         green_bids = cls._filter_orders_by_requirement(
             bids_mapping.values(), "energy_type", "PV")
         return PayAsBidMatchingAlgorithm.get_matches_recommendations(
-            {market_id: {"bids": green_bids, "offers": green_offers}})
+            {market_id: {time_slot: {"bids": green_bids, "offers": green_offers}}})
 
     @classmethod
     def _filter_orders_by_requirement(
