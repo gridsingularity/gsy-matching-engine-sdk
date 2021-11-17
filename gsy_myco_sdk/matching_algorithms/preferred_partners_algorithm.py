@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Dict, List, Tuple
 
-from gsy_framework.data_classes import OrdersMatch, BaseBidOffer, Bid, Offer
+from gsy_framework.data_classes import OrdersMatch, BaseOrder, Bid, Offer
 from gsy_framework.matching_algorithms import BaseMatchingAlgorithm
 from gsy_framework.matching_algorithms.requirements_validators import (
     RequirementsSatisfiedChecker)
@@ -155,7 +155,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
 
     @classmethod
     def _get_required_energy_and_rate_from_order(
-            cls, order: BaseBidOffer.serializable_dict,
+            cls, order: BaseOrder.serializable_dict,
             order_requirement: Dict) -> Tuple[float, float]:
         """Determine the energy and clearing rate based on an order + its requirement.
 
