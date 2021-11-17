@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from copy import deepcopy
 from typing import Dict, Union, List, Tuple, Iterable
 
-from gsy_framework.data_classes import BidOfferMatch
+from gsy_framework.data_classes import OrdersMatch
 from gsy_framework.matching_algorithms import BaseMatchingAlgorithm, PayAsBidMatchingAlgorithm
 
 from gsy_myco_sdk.matching_algorithms.preferred_partners_algorithm import (
@@ -38,7 +38,7 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
 
     @classmethod
     def get_matches_recommendations(
-            cls, matching_data: Dict[str, Dict]) -> List[BidOfferMatch.serializable_dict]:
+            cls, matching_data: Dict[str, Dict]) -> List[OrdersMatch.serializable_dict]:
         recommendations = []
         for market_id, time_slot_data in matching_data.items():
             for time_slot, data in time_slot_data.items():
@@ -123,7 +123,7 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
     @classmethod
     def _filter_out_consumed_orders(
             cls, bids_mapping: Dict[str, Dict], offers_mapping: Dict[str, Dict],
-            recommendations: List[BidOfferMatch.serializable_dict]) -> Tuple[Dict, Dict]:
+            recommendations: List[OrdersMatch.serializable_dict]) -> Tuple[Dict, Dict]:
         """Return bids/offers lists that are not present in the recommendations yet."""
         open_bids_mapping = deepcopy(bids_mapping)
         open_offers_mapping = deepcopy(offers_mapping)

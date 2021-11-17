@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import uuid
 from typing import Optional
 
-from gsy_framework.data_classes import Offer, BidOfferMatch, Bid
+from gsy_framework.data_classes import Offer, OrdersMatch, Bid
 from pendulum import DateTime
 
 from myco_api_client.matching_algorithms.preferred_partners_algorithm import (
@@ -73,11 +73,11 @@ class TestPreferredPartnersMatchingAlgorithm:
         }}}
         assert PreferredPartnersMatchingAlgorithm.get_matches_recommendations(
             data) == [
-                   BidOfferMatch(bids=[bid], offers=[offer],
-                                 market_id="market",
-                                 trade_rate=bid["energy_rate"],
-                                 selected_energy=30,
-                                 time_slot="2021-10-06T12:00").serializable_dict()]
+                   OrdersMatch(bids=[bid], offers=[offer],
+                               market_id="market",
+                               trade_rate=bid["energy_rate"],
+                               selected_energy=30,
+                               time_slot="2021-10-06T12:00").serializable_dict()]
 
     def test_get_energy_and_clearing_rate(self):
         offer = self.offer_factory().serializable_dict()

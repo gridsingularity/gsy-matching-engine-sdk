@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Dict, List, Tuple
 
-from gsy_framework.data_classes import BidOfferMatch, BaseBidOffer, Bid, Offer
+from gsy_framework.data_classes import OrdersMatch, BaseBidOffer, Bid, Offer
 from gsy_framework.matching_algorithms import BaseMatchingAlgorithm
 from gsy_framework.matching_algorithms.requirements_validators import (
     RequirementsSatisfiedChecker)
@@ -33,7 +33,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
     """
     @classmethod
     def get_matches_recommendations(
-            cls, matching_data: Dict) -> List[BidOfferMatch.serializable_dict]:
+            cls, matching_data: Dict) -> List[OrdersMatch.serializable_dict]:
         recommendations = []
         for market_id, time_slot_data in matching_data.items():
             for time_slot, data in time_slot_data.items():
@@ -49,7 +49,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
             cls, market_id: str,
             time_slot: str,
             bids: List[Bid.serializable_dict],
-            offers: List[Offer.serializable_dict]) -> List[BidOfferMatch.serializable_dict]:
+            offers: List[Offer.serializable_dict]) -> List[OrdersMatch.serializable_dict]:
         """
         This is a variant of the PAB algorithm, it works as following:
             1. Iterate over bids
@@ -90,7 +90,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                         selected_energy = min(bid_required_energy, offer_required_energy)
                         already_selected_offers.add(offer.get("id"))
                         orders_pair = (
-                            BidOfferMatch(
+                            OrdersMatch(
                                 market_id=market_id,
                                 bids=[bid], offers=[offer],
                                 selected_energy=selected_energy,

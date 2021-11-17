@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
-from gsy_framework.data_classes import BidOfferMatch
+from gsy_framework.data_classes import OrdersMatch
 
 
 class MycoMatcherClientInterface(ABC):
@@ -39,11 +39,11 @@ class MycoMatcherClientInterface(ABC):
         """
 
     @abstractmethod
-    def submit_matches(self, recommended_matches: List[BidOfferMatch.serializable_dict]):
+    def submit_matches(self, recommended_matches: List[OrdersMatch.serializable_dict]):
         """This method is meant to post the recommended_matches to exchange.
 
         Args:
-            recommended_matches: list of recommended trades List[BidOfferMatch.serializable_dict()
+            recommended_matches: list of recommended trades List[OrdersMatch.serializable_dict()
 
         Returns: None
         """

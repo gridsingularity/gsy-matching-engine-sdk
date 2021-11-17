@@ -123,7 +123,7 @@ The constructor of the API class can connect and register automatically to a run
     def on_orders_response(self, data):
       """
       Posted recommendations should be in the format: 
-      [BidOfferMatch.serializable_dict(), BidOfferMatch.serializable_dict()]
+      [OrdersMatch.serializable_dict(), OrdersMatch.serializable_dict()]
       """
       orders = data.get("orders")
       recommendations = my_custom_matching_algorithm(orders)
