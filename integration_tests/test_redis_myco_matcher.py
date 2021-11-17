@@ -20,12 +20,12 @@ class TestRedisMycoMatcher(RedisBaseMatcher):
     def on_tick(self, data):
         self.called_events.add("tick")
         logging.info("Tick")
-        self.request_offers_bids(filters={})
+        self.request_orders(filters={})
 
-    def on_offers_bids_response(self, data):
-        self.called_events.add("offers_bids_response")
+    def on_orders_response(self, data):
+        self.called_events.add("orders_response")
         recommendations = PayAsBidMatchingAlgorithm.get_matches_recommendations(
-            data.get("bids_offers"))
+            data.get("orders"))
         self.submit_matches(recommendations)
 
     def on_finish(self, data):

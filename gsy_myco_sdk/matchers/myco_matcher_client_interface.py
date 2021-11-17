@@ -11,19 +11,19 @@ class MycoMatcherClientInterface(ABC):
     support.
     """
     @abstractmethod
-    def request_offers_bids(self, filters: Dict):
+    def request_orders(self, filters: Dict):
         """This method contains the code that queries the open offers/bids in the simulation.
 
         Returns: None
         """
 
     @abstractmethod
-    def on_offers_bids_response(self, data: Dict):
+    def on_orders_response(self, data: Dict):
         """Perform specific actions after bids/offers response is returned.
 
         Args:
             data: Contains data of the open offers/ bids in the format:
-        { "bids_offers": {market_uuid: {"offers": [...], "bids": [...]}}}
+        { "orders": {market_uuid: {"offers": [...], "bids": [...]}}}
 
         Returns: None
         """

@@ -21,10 +21,10 @@ class MycoMatcher(base_matcher):
         pass
 
     def on_tick(self, data):
-        self.request_offers_bids(filters={})
+        self.request_orders(filters={})
 
-    def on_offers_bids_response(self, data):
-        matching_data = data.get("bids_offers")
+    def on_orders_response(self, data):
+        matching_data = data.get("orders")
         if not matching_data:
             return
         recommendations = AttributedMatchingAlgorithm.get_matches_recommendations(

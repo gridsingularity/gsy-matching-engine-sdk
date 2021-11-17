@@ -42,13 +42,13 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
             data = {"recommended_matches": recommended_matches}
             self._post_request(f"{self.url_prefix}/recommendations", data)
 
-    def request_offers_bids(self, filters: Dict = None):
-        self._get_request(f"{self.url_prefix}/offers-bids", {"filters": filters})
+    def request_orders(self, filters: Dict = None):
+        self._get_request(f"{self.url_prefix}/orders/", {"filters": filters})
 
-    def _on_offers_bids_response(self, data):
-        self.on_offers_bids_response(data)
+    def _on_orders_response(self, data):
+        self.on_orders_response(data)
 
-    def on_offers_bids_response(self, data):
+    def on_orders_response(self, data):
         recommendations = []
         self.submit_matches(recommendations)
 

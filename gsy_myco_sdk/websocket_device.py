@@ -8,7 +8,7 @@ class WebsocketMessageReceiver:
         self.client = rest_client
 
     def _handle_event_message(self, message):
-        """Available events: market, tick, finish, offers_bids_response, matched_recommendations_response.
+        """Available events: market, tick, finish, orders_response, matched_recommendations_response.
 
         Args:
             message: Received websocket message

@@ -79,7 +79,7 @@ by overriding the corresponding methods.
 - when a new tick has started, the `on_tick` method is called
 - when the simulation has finished, the `on_finish` method is called
 - when any event arrives, the `on_event_or_response` method is called
-- When the open offers/bids response is returned, the `on_offers_bids_response` method is called
+- When the open offers/bids response is returned, the `on_orders_response` method is called
 - When the posted recommendations response is returned, the `on_matched_recommendations_response` method is called
 ---
 
@@ -106,7 +106,7 @@ The constructor of the API class can connect and register automatically to a run
     ```python
       from gsy_myco_sdk.matchers.base_matcher import BaseMatcher
       matching_client = BaseMatcher()
-      matching_client.request_offers_bids(filters={}) 
+      matching_client.request_orders(filters={}) 
       ```
     ```
     
@@ -114,18 +114,18 @@ The constructor of the API class can connect and register automatically to a run
     - `markets`: list of market ids, only fetch bids/offers in these markets (If not provided, all markets are included). 
     - `energy_type`: energy type of offers to be returned.
           
-    The bids_offers response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm and fires a call to submit_matches()
+    The orders' response can be received in the method named `on_orders_response`, this one can be overridden to decide the recommendations algorithm and fires a call to submit_matches()
 
   
-- Posts the trading bid/offer pairs recommendations back to GSy Exchange, can be called from the overridden on_offers_bids_response:
+- Posts the trading bid/offer pairs recommendations back to GSy Exchange, can be called from the overridden on_orders_response:
 
     ```python
-    def on_offers_bids_response(self, data):
+    def on_orders_response(self, data):
       """
       Posted recommendations should be in the format: 
       [BidOfferMatch.serializable_dict(), BidOfferMatch.serializable_dict()]
       """
-      bids_offers = data.get("bids_offers")
-      recommendations = my_custom_matching_algorithm(bids_offers)
+      orders = data.get("orders")
+      recommendations = my_custom_matching_algorithm(orders)
       self.submit_matches(recommended_matches=recommendations)
     ```

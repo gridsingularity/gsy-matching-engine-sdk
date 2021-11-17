@@ -48,7 +48,7 @@ def step_impl(context):
 
 @then("all events handler are called")
 def step_impl(context):
-    assert context.matcher.called_events == {"market_cycle", "tick", "offers_bids_response",
+    assert context.matcher.called_events == {"market_cycle", "tick", "orders_response",
                                              "event_or_response", "match", "finish",
                                              "on_area_map_response"}
 
