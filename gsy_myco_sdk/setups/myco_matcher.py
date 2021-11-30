@@ -40,7 +40,7 @@ class MycoMatcher(base_matcher):
         pass
 
     def on_event_or_response(self, data):
-        logging.info("Event arrived %s", data)
+        logging.debug("Event arrived %s", data)
 
 
 matcher = MycoMatcher()

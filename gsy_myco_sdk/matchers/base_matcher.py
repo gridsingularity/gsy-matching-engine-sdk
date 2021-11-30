@@ -35,6 +35,8 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
                                                 self.dispatcher)
         self.websocket_thread.start()
         self.callback_thread = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
+        logging.info("Connection to gsy-e has been established (simulation_id: %s).",
+                     self.simulation_id)
 
     def submit_matches(self, recommended_matches):
         if recommended_matches:

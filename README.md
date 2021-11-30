@@ -52,7 +52,7 @@ The following parameters can be set via the CLI:
 #### Examples
 - For local testing of the API client:
   ```
-  gsy-myco-sdk --log-level ERROR run --setup redis_myco_matcher --run-on-redis
+  gsy-myco-sdk --log-level ERROR run --setup myco_matcher --run-on-redis
   ```
 - For testing your api client script on remote server hosting GSy Exchange's collaboration/CNs.
     - If user's client script resides on `gsy_myco_sdk/setups`

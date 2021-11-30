@@ -23,9 +23,13 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         self.redis_db = StrictRedis.from_url(redis_url)
         self.pubsub = self.redis_db.pubsub() if pubsub_thread is None else pubsub_thread
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
+        self._connect_to_simulation()
+
+    def _connect_to_simulation(self):
         self._get_simulation_id(is_blocking=True)
         self.redis_channels_prefix = f"external-myco/{self.simulation_id}"
         self._subscribe_to_response_channels()
+        logging.info("Connection to gsy-e has been established.")
 
     def _set_simulation_id(self, payload):
         data = json.loads(payload["data"])
