@@ -11,21 +11,20 @@ from gsy_myco_sdk.constants import MAX_WORKER_THREADS
 from gsy_myco_sdk.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
 
 
-class RedisAPIException(Exception):
-    pass
-
-
 class RedisBaseMatcher(MycoMatcherClientInterface):
+    """Handle order matching via redis connection."""
     def __init__(self, redis_url="redis://localhost:6379",
-                 pubsub_thread=None):
+                 pubsub_thread=None, auto_connect=True):
         self.simulation_id = None
         self.pubsub_thread = pubsub_thread
         self.redis_db = StrictRedis.from_url(redis_url)
         self.pubsub = self.redis_db.pubsub() if pubsub_thread is None else pubsub_thread
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
-        self._connect_to_simulation()
+        if auto_connect:
+            self.connect_to_simulation()
 
-    def _connect_to_simulation(self):
+    def connect_to_simulation(self):
+        """Subscribe to redis response channels and thus connect to a simulation."""
         self._get_simulation_id(is_blocking=True)
         self.redis_channels_prefix = f"external-myco/{self.simulation_id}"
         self._subscribe_to_response_channels()
@@ -34,7 +33,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
     def _set_simulation_id(self, payload):
         data = json.loads(payload["data"])
         self.simulation_id = data.get("simulation_id")
-        logging.debug(f"Received Simulation ID {self.simulation_id}")
+        logging.debug("Received Simulation ID %s", self.simulation_id)
 
     def _check_is_set_simulation_id(self):
         return self.simulation_id is not None
@@ -67,7 +66,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         self._start_pubsub_thread()
 
     def submit_matches(self, recommended_matches):
-        logging.debug(f"Sending recommendations {recommended_matches}")
+        logging.debug("Sending recommendations %s", recommended_matches)
         data = {"recommended_matches": recommended_matches}
         self.redis_db.publish(f"{self.redis_channels_prefix}/recommendations/", json.dumps(data))
 
@@ -76,6 +75,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         self.redis_db.publish(f"{self.redis_channels_prefix}/offers-bids/", json.dumps(data))
 
     def request_area_id_name_map(self):
+        """Request area_id_name_map from simulation."""
         channel = f"{self.simulation_id}/area-map/"
         self.redis_db.publish(channel, json.dumps({}))
 
