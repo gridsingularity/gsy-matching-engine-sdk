@@ -13,17 +13,15 @@ from gsy_myco_sdk.matchers.myco_matcher_client_interface import MycoMatcherClien
 
 class RedisBaseMatcher(MycoMatcherClientInterface):
     """Handle order matching via redis connection."""
-    def __init__(self, redis_url="redis://localhost:6379",
-                 pubsub_thread=None, auto_connect=True):
+    def __init__(self, redis_url="redis://localhost:6379", pubsub_thread=None):
         self.simulation_id = None
         self.pubsub_thread = pubsub_thread
         self.redis_db = StrictRedis.from_url(redis_url)
         self.pubsub = self.redis_db.pubsub() if pubsub_thread is None else pubsub_thread
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
-        if auto_connect:
-            self.connect_to_simulation()
+        self._connect_to_simulation()
 
-    def connect_to_simulation(self):
+    def _connect_to_simulation(self):
         """Subscribe to redis response channels and thus connect to a simulation."""
         self._get_simulation_id(is_blocking=True)
         self.redis_channels_prefix = f"external-myco/{self.simulation_id}"
@@ -50,9 +48,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
 
         if is_blocking:
             try:
-                wait_until_timeout_blocking(
-                    lambda: self._check_is_set_simulation_id(), timeout=50
-                )
+                wait_until_timeout_blocking(self._check_is_set_simulation_id(), timeout=50)
             except AssertionError:
                 self.simulation_id = ""  # default simulation id for cli simulations
 
