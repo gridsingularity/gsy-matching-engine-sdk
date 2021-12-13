@@ -48,7 +48,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
 
         if is_blocking:
             try:
-                wait_until_timeout_blocking(self._check_is_set_simulation_id(), timeout=50)
+                wait_until_timeout_blocking(self._check_is_set_simulation_id, timeout=50)
             except AssertionError:
                 self.simulation_id = ""  # default simulation id for cli simulations
 
