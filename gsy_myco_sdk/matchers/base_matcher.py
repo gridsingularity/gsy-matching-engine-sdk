@@ -1,3 +1,4 @@
+# pylint: disable=too-many-instance-attributes
 import logging
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Dict
@@ -15,8 +16,8 @@ from gsy_myco_sdk.websocket_device import WebsocketMessageReceiver
 
 
 class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
-    def __init__(self, simulation_id=None, domain_name=None, websocket_domain_name=None,
-                 auto_connect=True):
+    """Handle order matching via rest connection."""
+    def __init__(self, simulation_id=None, domain_name=None, websocket_domain_name=None):
         self.simulation_id = simulation_id if simulation_id else simulation_id_from_env()
         self.domain_name = domain_name if domain_name else domain_name_from_env()
         self.websocket_domain_name = (
@@ -25,16 +26,17 @@ class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         self.jwt_token = retrieve_jwt_key_from_server(self.domain_name)
         self._create_jwt_refresh_timer(self.domain_name)
         self.url_prefix = f"{self.domain_name}/external-connection/api/{self.simulation_id}"
-        if auto_connect:
-            self.start_websocket_connection()
+        self._start_websocket_connection()
 
-    def start_websocket_connection(self):
+    def _start_websocket_connection(self):
         self.dispatcher = WebsocketMessageReceiver(self)
         websocket_uri = f"{self.websocket_domain_name}/{self.simulation_id}/myco/"
         self.websocket_thread = WebsocketThread(websocket_uri, self.domain_name,
                                                 self.dispatcher)
         self.websocket_thread.start()
         self.callback_thread = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
+        logging.info("Connection to gsy-e has been established (simulation_id: %s).",
+                     self.simulation_id)
 
     def submit_matches(self, recommended_matches):
         if recommended_matches:
