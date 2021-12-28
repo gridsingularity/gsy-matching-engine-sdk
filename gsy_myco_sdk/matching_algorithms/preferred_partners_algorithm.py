@@ -44,6 +44,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                     market_id, time_slot, bids=data.get("bids"), offers=data.get("offers")))
         return recommendations
 
+    # pylint: disable=too-many-locals
     @classmethod
     def _perform_trading_partners_matching(
             cls, market_id: str,
@@ -89,6 +90,8 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
 
                         selected_energy = min(bid_required_energy, offer_required_energy)
                         already_selected_offers.add(offer.get("id"))
+                        bid["selected_requirement"] = bid_requirement
+                        offer["selected_requirement"] = offer_requirement
                         orders_pair = (
                             BidOfferMatch(
                                 market_id=market_id,
