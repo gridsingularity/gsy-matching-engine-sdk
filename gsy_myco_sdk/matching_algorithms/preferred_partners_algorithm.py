@@ -62,6 +62,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
             8. Validate whether the offer/bid can satisfy each other's energy requirements
             9. Create a match recommendation
         """
+        # TODO: enable N to N matching here
         orders_pairs = []
         bids = sort_list_of_dicts_by_attribute(bids, "energy_rate", True)
         offers = sort_list_of_dicts_by_attribute(offers, "energy_rate", True)
@@ -92,7 +93,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                         orders_pair = (
                             BidOfferMatch(
                                 market_id=market_id,
-                                bids=[bid], offers=[offer],
+                                bid=bid, offer=offer,
                                 selected_energy=selected_energy,
                                 trade_rate=bid_required_clearing_rate,
                                 time_slot=time_slot).serializable_dict())
