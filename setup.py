@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 from gsy_myco_sdk import __version__
 
-BRANCH = os.environ.get("BRANCH", "refactoring/GSYE-140")
+BRANCH = os.environ.get("BRANCH", "master")
 
 
 try:
