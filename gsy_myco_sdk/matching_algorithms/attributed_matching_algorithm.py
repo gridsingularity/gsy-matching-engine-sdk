@@ -128,8 +128,6 @@ class AttributedMatchingAlgorithm(BaseMatchingAlgorithm):
         open_bids_mapping = deepcopy(bids_mapping)
         open_offers_mapping = deepcopy(offers_mapping)
         for recommendation in recommendations:
-            for bid in recommendation["bids"]:
-                open_bids_mapping.pop(bid["id"], None)
-            for offer in recommendation["offers"]:
-                open_offers_mapping.pop(offer["id"], None)
+            open_bids_mapping.pop(recommendation["bid"]["id"], None)
+            open_offers_mapping.pop(recommendation["offer"]["id"], None)
         return open_bids_mapping, open_offers_mapping
