@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Dict
 
 from tabulate import tabulate
 
@@ -19,7 +20,7 @@ def simulation_id_from_env():
     return os.environ.get("MYCO_CLIENT_SIMULATION_ID", MYCO_CLIENT_SIMULATION_ID)
 
 
-def log_recommendations_response(data: dict) -> None:
+def log_recommendations_response(data: Dict) -> None:
     """Log the response data of recommendations sent to the clearing mechanism."""
     recommendations = data["recommendations"]
     if not recommendations:
