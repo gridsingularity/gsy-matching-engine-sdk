@@ -77,7 +77,11 @@ class TestPreferredPartnersMatchingAlgorithm:
                                  market_id="market",
                                  trade_rate=bid["energy_rate"],
                                  selected_energy=30,
-                                 time_slot="2021-10-06T12:00").serializable_dict()]
+                                 time_slot="2021-10-06T12:00",
+                                 matching_requirements={
+                                     "bid_requirement": {"trading_partners": [offer["seller_id"]]},
+                                     "offer_requirement": {}
+                                 }).serializable_dict()]
 
     def test_get_energy_and_clearing_rate(self):
         offer = self.offer_factory().serializable_dict()
