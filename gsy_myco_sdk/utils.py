@@ -32,7 +32,6 @@ def log_recommendations_response(data: Dict) -> None:
         "Bid kWh", "Offer kWh", "Status", "Message"]
 
     # Workaround for not printing propagated recommendations
-    # buyers / sellers can not be part of multiple recommendations
     orders_cache = set()
     index = 1
     for recommendation in recommendations:
