@@ -2,6 +2,7 @@ import logging
 import os
 from typing import Dict
 
+from gsy_framework.constants_limits import DEFAULT_PRECISION
 from tabulate import tabulate
 
 from gsy_myco_sdk.constants import DEFAULT_DOMAIN_NAME, DEFAULT_WEBSOCKET_DOMAIN, \
@@ -31,15 +32,19 @@ def log_recommendations_response(data: Dict) -> None:
         "#", "Buyer", "Seller",
         "Bid kWh", "Offer kWh", "Status", "Message"]
 
-    # Workaround for not printing propagated recommendations
+    # Orders can get forwarded to higher/lower markets
+    # In order not to log all propagations of the same orders, a workaround
+    # would be to cache the already logged orders' attributes that do not change when forwarded
     orders_cache = set()
     index = 1
     for recommendation in recommendations:
         bid = recommendation["bid"]
         offer = recommendation["offer"]
-        offer_data = (f"{offer['energy']}-{offer['original_price']}-"
+        offer_data = (f"{round(offer['energy'], DEFAULT_PRECISION)}-"
+                      f"{round(offer['original_price'], DEFAULT_PRECISION)}-"
                       f"{offer['seller_origin_id']}-{offer['time_slot']}")
-        bid_data = (f"{bid['energy']}-{bid['original_price']}-"
+        bid_data = (f"{round(bid['energy'], DEFAULT_PRECISION)}-"
+                    f"{round(bid['original_price'], DEFAULT_PRECISION)}-"
                     f"{bid['buyer_origin_id']}-{bid['time_slot']}")
         if offer_data not in orders_cache or bid_data not in orders_cache:
             recommendations_table.append(
