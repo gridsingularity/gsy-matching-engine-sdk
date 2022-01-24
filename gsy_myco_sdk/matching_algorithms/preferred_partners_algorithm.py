@@ -96,7 +96,11 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                                 bid=bid, offer=offer,
                                 selected_energy=selected_energy,
                                 trade_rate=bid_required_clearing_rate,
-                                time_slot=time_slot).serializable_dict())
+                                time_slot=time_slot,
+                                matching_requirements={
+                                    "bid_requirement": bid_requirement,
+                                    "offer_requirement": offer_requirement
+                                }).serializable_dict())
                         break  # break the offer requirements loop
                     if orders_pair:
                         break  # break the offers loop
