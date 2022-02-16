@@ -15,9 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from copy import deepcopy
+from typing import Dict, List, Tuple, Optional
 
-from typing import Dict, List, Tuple
-
+from gsy_framework.constants_limits import FLOATING_POINT_TOLERANCE
 from gsy_framework.data_classes import BidOfferMatch, BaseBidOffer, Bid, Offer
 from gsy_framework.matching_algorithms import BaseMatchingAlgorithm
 from gsy_framework.matching_algorithms.requirements_validators import (
@@ -30,85 +31,30 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
 
     Match the bids with their preferred trading partners offers using the PAB matching algorithm.
     A trading partner is a preferable partner that should be matched with.
-    """
+
+    This is a variant of the PAB algorithm, it works as following:
+        1. Iterate over bids
+        2. Iterate over requirements of each bid
+        3. Make sure there is a `trading_partners` requirement
+        4. Iterate over trading partners
+        5. Check if there are offers for each partner (from cache {seller_id: [sellers..]})
+        6. Iterate over the requirements of the candidate offer
+        7. Calculate the match's possible selection of energy and clearing rate
+        8. Validate whether the offer/bid can satisfy each other's energy requirements
+        9. Create a match recommendation
+        """
+
     @classmethod
-    def get_matches_recommendations(
-            cls, matching_data: Dict) -> List[BidOfferMatch.serializable_dict]:
-        recommendations = []
+    def get_matches_recommendations(cls, matching_data: Dict) -> List:
+        bid_offer_matches = []
         for market_id, time_slot_data in matching_data.items():
             for time_slot, data in time_slot_data.items():
-                if not (data.get("bids") and data.get("offers")):
-                    continue
-
-                recommendations.extend(cls._perform_trading_partners_matching(
-                    market_id, time_slot, bids=data.get("bids"), offers=data.get("offers")))
-        return recommendations
-
-    @classmethod
-    def _perform_trading_partners_matching(
-            cls, market_id: str,
-            time_slot: str,
-            bids: List[Bid.serializable_dict],
-            offers: List[Offer.serializable_dict]) -> List[BidOfferMatch.serializable_dict]:
-        """
-        This is a variant of the PAB algorithm, it works as following:
-            1. Iterate over bids
-            2. Iterate over requirements of each bid
-            3. Make sure there is a `trading_partners` requirement
-            4. Iterate over trading partners
-            5. Check if there are offers for each partner (from cache {seller_id: [sellers..]})
-            6. Iterate over the requirements of the candidate offer
-            7. Calculate the match's possible selection of energy and clearing rate
-            8. Validate whether the offer/bid can satisfy each other's energy requirements
-            9. Create a match recommendation
-        """
-        # TODO: enable N to N matching here
-        orders_pairs = []
-        bids = sort_list_of_dicts_by_attribute(bids, "energy_rate", True)
-        offers = sort_list_of_dicts_by_attribute(offers, "energy_rate", True)
-        offers_mapping = cls._get_actor_to_offers_mapping(offers)
-        already_selected_offers = set()
-        for bid in bids:
-            orders_pair = None
-            for bid_requirement in bid.get("requirements") or []:
-                bid_required_energy, bid_required_clearing_rate = (
-                    cls._get_required_energy_and_rate_from_order(bid, bid_requirement))
-                preferred_offers = []
-                for partner in bid_requirement.get("trading_partners") or []:
-                    preferred_offers.extend(offers_mapping.get(partner) or [])
-                for offer in preferred_offers:
-                    if (offer.get("id") in already_selected_offers or
-                            offer.get("seller") == bid.get("buyer")):
-                        continue
-                    for offer_requirement in offer.get("requirements") or [{}]:
-                        if not cls._can_order_be_matched(
-                                bid, offer, bid_requirement, offer_requirement):
-                            continue
-
-                        offer_required_energy, _ = (
-                            cls._get_required_energy_and_rate_from_order(offer, offer_requirement))
-
-                        selected_energy = min(bid_required_energy, offer_required_energy)
-                        already_selected_offers.add(offer.get("id"))
-                        orders_pair = (
-                            BidOfferMatch(
-                                market_id=market_id,
-                                bid=bid, offer=offer,
-                                selected_energy=selected_energy,
-                                trade_rate=bid_required_clearing_rate,
-                                time_slot=time_slot,
-                                matching_requirements={
-                                    "bid_requirement": bid_requirement,
-                                    "offer_requirement": offer_requirement
-                                }).serializable_dict())
-                        break  # break the offer requirements loop
-                    if orders_pair:
-                        break  # break the offers loop
-                if orders_pair:
-                    orders_pairs.append(orders_pair)
-                    break  # break the bid requirements loop
-
-        return orders_pairs
+                bid_offer_matches.extend(cls._calculate_bid_offer_matches_for_one_market_timeslot(
+                    market_id, time_slot, data
+                ))
+        return [
+            match.serializable_dict() for match in bid_offer_matches
+        ]
 
     @classmethod
     def _can_order_be_matched(
@@ -124,6 +70,8 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
 
         bid_required_energy, bid_required_clearing_rate = (
             cls._get_required_energy_and_rate_from_order(bid, bid_requirement))
+        bid_requirement = deepcopy(bid_requirement)
+        bid_requirement.pop("original_price", None)
         if bid_required_clearing_rate < offer_required_clearing_rate:
             return False
         if not (RequirementsSatisfiedChecker.is_bid_requirement_satisfied(
@@ -179,3 +127,99 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
         else:
             order_required_clearing_rate = order["energy_rate"]
         return order_required_energy, order_required_clearing_rate
+
+    @classmethod
+    def _calculate_bid_offer_matches_for_one_market_timeslot(
+            cls, market_id: str, time_slot: str, data: Dict) -> List[BidOfferMatch]:
+        """
+        Calculate all possible matches for one market slot.
+        """
+        bid_offer_matches = []
+        bids = data.get("bids")
+        offers = data.get("offers")
+        # Sorted bids in descending orders
+        sorted_bids = sort_list_of_dicts_by_attribute(bids, "energy_rate", True)
+        # Sorted offers in descending order
+        sorted_offers = sort_list_of_dicts_by_attribute(offers, "energy_rate", True)
+        offers_mapping = cls._get_actor_to_offers_mapping(offers)
+        available_order_energy = {}
+        for bid in sorted_bids:
+            for offer in sorted_offers:
+                if offer.get("seller") == bid.get("buyer"):
+                    continue
+
+                possible_match = cls._match_one_bid_one_offer(
+                    offer, bid, available_order_energy, market_id, time_slot, offers_mapping)
+                if possible_match:
+                    bid_offer_matches.append(possible_match)
+
+                if (bid["id"] in available_order_energy and
+                        available_order_energy[bid["id"]] <= FLOATING_POINT_TOLERANCE):
+                    break
+        return bid_offer_matches
+
+    @classmethod
+    def _match_one_bid_one_offer(
+            cls, offer: Dict, bid: Dict, available_order_energy: Dict,
+            market_id: str, time_slot: str, offers_mapping: Dict) -> Optional[BidOfferMatch]:
+        """
+        Try to match one bid with one offer, and at the same time update the dict with the
+        already selected order energy in order to be able to reuse the same order in future
+        matches.
+        """
+        if bid["id"] not in available_order_energy:
+            available_order_energy[bid["id"]] = bid["energy"]
+        if offer["id"] not in available_order_energy:
+            available_order_energy[offer["id"]] = offer["energy"]
+        available_offer_energy = available_order_energy[offer["id"]]
+        available_bid_energy = available_order_energy[bid["id"]]
+
+        for index, bid_requirement in enumerate(bid.get("requirements") or []):
+            bid_required_energy, bid_required_clearing_rate = (
+                cls._get_required_energy_and_rate_from_order(bid, bid_requirement))
+            preferred_offers = []
+            for partner in bid_requirement.get("trading_partners") or []:
+                preferred_offers.extend(offers_mapping.get(partner) or [])
+
+            for offer_requirement in offer.get("requirements") or [{}]:
+                if not cls._can_order_be_matched(
+                        bid, offer, bid_requirement, offer_requirement):
+                    continue
+
+                offer_required_energy, offer_required_clearing_rate = (
+                    cls._get_required_energy_and_rate_from_order(offer, offer_requirement))
+
+                if (
+                        offer_required_clearing_rate - bid_required_clearing_rate
+                ) > FLOATING_POINT_TOLERANCE:
+                    return None
+
+                selected_energy = min(offer_required_energy, bid_required_energy)
+
+                if (selected_energy <= FLOATING_POINT_TOLERANCE or
+                        available_offer_energy < selected_energy or
+                        available_bid_energy < selected_energy):
+                    return None
+
+                recommendation = BidOfferMatch(
+                    market_id=market_id,
+                    time_slot=time_slot,
+                    bid=bid, offer=offer,
+                    selected_energy=selected_energy,
+                    trade_rate=bid_required_clearing_rate,
+                    matching_requirements={
+                        "bid_requirement": bid_requirement,
+                        "offer_requirement": offer_requirement
+                    })
+                available_order_energy[bid["id"]] -= selected_energy
+                available_order_energy[offer["id"]] -= selected_energy
+                assert all(v >= -FLOATING_POINT_TOLERANCE
+                           for v in available_order_energy.values())
+
+                if bid_requirement.get("energy") is not None:
+                    updated_requirement = deepcopy(bid_requirement)
+                    updated_requirement["energy"] -= selected_energy
+                    assert updated_requirement["energy"] >= -FLOATING_POINT_TOLERANCE
+                    bid["requirements"][index] = updated_requirement
+
+                return recommendation
