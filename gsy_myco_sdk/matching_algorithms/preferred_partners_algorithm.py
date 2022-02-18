@@ -70,8 +70,6 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
 
         bid_required_energy, bid_required_clearing_rate = (
             cls._get_required_energy_and_rate_from_order(bid, bid_requirement))
-        bid_requirement = deepcopy(bid_requirement)
-        bid_requirement.pop("original_price", None)
         if bid_required_clearing_rate < offer_required_clearing_rate:
             return False
         if not (RequirementsSatisfiedChecker.is_bid_requirement_satisfied(
