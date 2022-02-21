@@ -176,7 +176,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
         available_offer_energy = available_order_energy[offer["id"]]
         available_bid_energy = available_order_energy[bid["id"]]
 
-        for index, bid_requirement in enumerate(bid.get("requirements") or []):
+        for bid_requirement in bid.get("requirements") or []:
             bid_required_energy, bid_required_clearing_rate = (
                 cls._get_required_energy_and_rate_from_order(bid, bid_requirement))
             preferred_offers = []
@@ -210,8 +210,8 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                     selected_energy=selected_energy,
                     trade_rate=bid_required_clearing_rate,
                     matching_requirements={
-                        "bid_requirement": bid_requirement,
-                        "offer_requirement": offer_requirement
+                        "bid_requirement": deepcopy(bid_requirement),
+                        "offer_requirement": deepcopy(offer_requirement)
                     })
                 available_order_energy[bid["id"]] -= selected_energy
                 available_order_energy[offer["id"]] -= selected_energy
@@ -219,9 +219,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                            for v in available_order_energy.values())
 
                 if bid_requirement.get("energy") is not None:
-                    updated_requirement = deepcopy(bid_requirement)
-                    updated_requirement["energy"] -= selected_energy
-                    assert updated_requirement["energy"] >= -FLOATING_POINT_TOLERANCE
-                    bid["requirements"][index] = updated_requirement
+                    bid_requirement["energy"] -= selected_energy
+                    assert bid_requirement["energy"] >= -FLOATING_POINT_TOLERANCE
 
                 return recommendation
