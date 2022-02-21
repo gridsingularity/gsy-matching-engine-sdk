@@ -33,15 +33,19 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
     A trading partner is a preferable partner that should be matched with.
 
     This is a variant of the PAB algorithm, it works as following:
-        1. Iterate over bids
-        2. Iterate over requirements of each bid
-        3. Make sure there is a `trading_partners` requirement
-        4. Iterate over trading partners
-        5. Check if there are offers for each partner (from cache {seller_id: [sellers..]})
-        6. Iterate over the requirements of the candidate offer
-        7. Calculate the match's possible selection of energy and clearing rate
-        8. Validate whether the offer/bid can satisfy each other's energy requirements
-        9. Create a match recommendation
+        1. Iterate over markets and time slots' data
+        2. For each time slot, iterate over the bids
+        3. Against each bid, iterate over the offers
+        4. Iterate over requirements of each bid
+        5. Make sure there is a `trading_partners` requirement
+        6. Iterate over trading partners
+        7. Check if there are offers for each partner (from cache {seller_id: [sellers..]})
+        8. Iterate over the requirements of the candidate offer
+        9. Calculate the match's possible selection of energy and clearing rate
+        10. Validate whether the offer/bid can satisfy each other's energy requirements
+        11. Create a match recommendation
+        12. Check whether the bid can still be matched with more offers
+        13. If there is residual energy, repeat the process
         """
 
     @classmethod
