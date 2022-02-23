@@ -45,7 +45,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
         10. Validate whether the offer/bid can satisfy each other's energy requirements
         11. Create a match recommendation
         12. Check whether the bid can still be matched with more offers
-        13. If there is residual energy, repeat the process
+        13. If there is residual energy, repeat the process from step 3
         """
 
     @classmethod
