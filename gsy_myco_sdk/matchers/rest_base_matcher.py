@@ -14,7 +14,7 @@ from gsy_myco_sdk.utils import (
 from gsy_myco_sdk.websocket_device import WebsocketMessageReceiver
 
 
-class BaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
+class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
     """Handle order matching via rest connection."""
     def __init__(self, simulation_id=None, domain_name=None, websocket_domain_name=None):
         self.simulation_id = simulation_id if simulation_id else simulation_id_from_env()

@@ -88,7 +88,7 @@ by overriding the corresponding methods.
 The constructor of the API class can connect and register automatically to a running collaboration:
 - `REST`
     ```
-    matching_client = BaseMatcher()
+    matching_client = RestBaseMatcher()
     ```
 - `LOCAL`
     ```
@@ -104,7 +104,7 @@ The constructor of the API class can connect and register automatically to a run
 
     ```python
     ```python
-      from gsy_myco_sdk.matchers.base_matcher import RestBaseMatcher
+      from gsy_myco_sdk.matchers.rest_base_matcher import RestBaseMatcher
       matching_client = RestBaseMatcher()
       matching_client.request_offers_bids(filters={})
       ```
