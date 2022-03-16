@@ -13,6 +13,9 @@ from gsy_myco_sdk.matchers.myco_matcher_client_interface import MycoMatcherClien
 from gsy_myco_sdk.matchers.myco_matcher_logger import MycoMatcherLogger
 
 
+LOGGER = logging.getLogger(__name__)
+
+
 class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-instance-attributes
     """Handle order matching via redis connection."""
     def __init__(self, redis_url="redis://localhost:6379", pubsub_thread=None):
@@ -22,7 +25,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-
         self.pubsub = self.redis_db.pubsub() if pubsub_thread is None else pubsub_thread
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
 
-        self.logger = MycoMatcherLogger
+        self.logger_helper = MycoMatcherLogger
         # Cached information about markets and time slots
         self._markets_cache = defaultdict(lambda: defaultdict(dict))
 
@@ -33,12 +36,12 @@ class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-
         self._get_simulation_id(is_blocking=True)
         self.redis_channels_prefix = f"external-myco/{self.simulation_id}"
         self._subscribe_to_response_channels()
-        logging.info("Connection to gsy-e has been established.")
+        LOGGER.info("Connection to gsy-e has been established.")
 
     def _set_simulation_id(self, payload):
         data = json.loads(payload["data"])
         self.simulation_id = data.get("simulation_id")
-        logging.debug("Received Simulation ID %s", self.simulation_id)
+        LOGGER.debug("Received Simulation ID %s", self.simulation_id)
 
     def _check_is_set_simulation_id(self):
         return self.simulation_id is not None
@@ -69,7 +72,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-
         self._start_pubsub_thread()
 
     def submit_matches(self, recommended_matches):
-        logging.debug("Sending recommendations %s", recommended_matches)
+        LOGGER.debug("Sending recommendations %s", recommended_matches)
         data = {"recommended_matches": recommended_matches}
         self.redis_db.publish(f"{self.redis_channels_prefix}/recommendations/", json.dumps(data))
 
@@ -104,7 +107,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-
         self.submit_matches(recommendations)
 
     def _on_match(self, data: Dict):
-        self.logger.log_recommendations_response(self._markets_cache, data)
+        self.logger_helper.log_recommendations_response(self._markets_cache, data)
         self.on_matched_recommendations_response(data=data)
 
     def on_matched_recommendations_response(self, data: Dict):

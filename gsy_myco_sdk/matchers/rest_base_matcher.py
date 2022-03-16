@@ -16,6 +16,9 @@ from gsy_myco_sdk.utils import (
 from gsy_myco_sdk.websocket_device import WebsocketMessageReceiver
 
 
+LOGGER = logging.getLogger(__name__)
+
+
 class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
     """Handle order matching via rest connection."""
     def __init__(self, simulation_id=None, domain_name=None, websocket_domain_name=None):
@@ -28,7 +31,7 @@ class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         self._create_jwt_refresh_timer(self.domain_name)
         self.url_prefix = f"{self.domain_name}/external-connection/api/{self.simulation_id}"
 
-        self.logger = MycoMatcherLogger
+        self._logger_helper = MycoMatcherLogger
         # Cached information about markets and time slots
         self._markets_cache = defaultdict(lambda: defaultdict(dict))
         self._start_websocket_connection()
@@ -40,12 +43,12 @@ class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
                                                 self.dispatcher)
         self.websocket_thread.start()
         self.callback_thread = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
-        logging.info("Connection to gsy-e has been established (simulation_id: %s).",
-                     self.simulation_id)
+        LOGGER.info(
+            "Connection to gsy-e has been established (simulation_id: %s).", self.simulation_id)
 
     def submit_matches(self, recommended_matches):
         if recommended_matches:
-            logging.debug("Sending recommendations %s.", recommended_matches)
+            LOGGER.debug("Sending recommendations %s.", recommended_matches)
             data = {"recommended_matches": recommended_matches}
             self._post_request(f"{self.url_prefix}/recommendations", data)
 
@@ -61,7 +64,7 @@ class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         self.submit_matches(recommendations)
 
     def _on_match(self, data):
-        self.logger.log_recommendations_response(self._markets_cache, data)
+        self._logger_helper.log_recommendations_response(self._markets_cache, data)
         self.on_matched_recommendations_response(data)
 
     def on_matched_recommendations_response(self, data):

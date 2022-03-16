@@ -7,6 +7,9 @@ from gsy_framework.constants_limits import DEFAULT_PRECISION
 from tabulate import tabulate
 
 
+LOGGER = logging.getLogger(__name__)
+
+
 class MycoMatcherLogger:
     """Custom logger used by instances of Myco matchers."""
 
@@ -26,7 +29,7 @@ class MycoMatcherLogger:
         recommendations = data["recommendations"]
         if not recommendations:
             return
-        logging.info("Length of recommendations: %s", len(recommendations))
+        LOGGER.info("Length of recommendations: %s", len(recommendations))
         recommendations_table = []
         recommendations_table_headers = [
             "#",
@@ -67,5 +70,6 @@ class MycoMatcherLogger:
                 index += 1
                 orders_cache.add(offer_data)
                 orders_cache.add(bid_data)
-        logging.info("\n%s", tabulate(recommendations_table, recommendations_table_headers,
-                                      tablefmt="fancy_grid"))
+        LOGGER.info(
+            "\n%s", tabulate(
+                recommendations_table, recommendations_table_headers, tablefmt="fancy_grid"))
