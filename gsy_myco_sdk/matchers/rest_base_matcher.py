@@ -1,5 +1,6 @@
 # pylint: disable=too-many-instance-attributes
 import logging
+from collections import defaultdict
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Dict
 
@@ -9,6 +10,7 @@ from gsy_framework.client_connections.websocket_connection import WebsocketThrea
 
 from gsy_myco_sdk.constants import MAX_WORKER_THREADS
 from gsy_myco_sdk.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
+from gsy_myco_sdk.matchers.myco_matcher_logger import MycoMatcherLogger
 from gsy_myco_sdk.utils import (
     domain_name_from_env, simulation_id_from_env, websocket_domain_name_from_env)
 from gsy_myco_sdk.websocket_device import WebsocketMessageReceiver
@@ -25,6 +27,10 @@ class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         self.jwt_token = retrieve_jwt_key_from_server(self.domain_name)
         self._create_jwt_refresh_timer(self.domain_name)
         self.url_prefix = f"{self.domain_name}/external-connection/api/{self.simulation_id}"
+
+        self.logger = MycoMatcherLogger
+        # Cached information about markets and time slots
+        self._markets_cache = defaultdict(lambda: defaultdict(dict))
         self._start_websocket_connection()
 
     def _start_websocket_connection(self):
@@ -47,6 +53,7 @@ class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         self._get_request(f"{self.url_prefix}/offers-bids", {"filters": filters})
 
     def _on_offers_bids_response(self, data: Dict):
+        self._cache_markets_information(data)
         self.on_offers_bids_response(data)
 
     def on_offers_bids_response(self, data: Dict):
@@ -54,6 +61,7 @@ class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         self.submit_matches(recommendations)
 
     def _on_match(self, data):
+        self.logger.log_recommendations_response(self._markets_cache, data)
         self.on_matched_recommendations_response(data)
 
     def on_matched_recommendations_response(self, data):

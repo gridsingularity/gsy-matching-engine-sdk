@@ -1,5 +1,6 @@
 import json
 import logging
+from collections import defaultdict
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Dict
 
@@ -9,9 +10,10 @@ from redis import StrictRedis
 
 from gsy_myco_sdk.constants import MAX_WORKER_THREADS
 from gsy_myco_sdk.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
+from gsy_myco_sdk.matchers.myco_matcher_logger import MycoMatcherLogger
 
 
-class RedisBaseMatcher(MycoMatcherClientInterface):
+class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-instance-attributes
     """Handle order matching via redis connection."""
     def __init__(self, redis_url="redis://localhost:6379", pubsub_thread=None):
         self.simulation_id = None
@@ -19,6 +21,11 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         self.redis_db = StrictRedis.from_url(redis_url)
         self.pubsub = self.redis_db.pubsub() if pubsub_thread is None else pubsub_thread
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
+
+        self.logger = MycoMatcherLogger
+        # Cached information about markets and time slots
+        self._markets_cache = defaultdict(lambda: defaultdict(dict))
+
         self._connect_to_simulation()
 
     def _connect_to_simulation(self):
@@ -76,6 +83,20 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         self.redis_db.publish(channel, json.dumps({}))
 
     def _on_offers_bids_response(self, data: Dict):
+        """Trigger actions when receiving the offers_bids_response event.
+
+        Args:
+            data: structure that maps each market UUID to a set of time slots. In each time slot
+                are defined bids, offers, and other attributes relative to the slot. E.g.:
+                {
+                    "98015745-c5e7-4cb5-bce1-7738cb94c372": {
+                        "2022-03-15T01:15": {
+                            "bids": [], "offers": [], "market_type_name": "Spot Market"}
+                        ...}
+                }
+
+        """
+        self._cache_markets_information(data)
         self.on_offers_bids_response(data=data)
 
     def on_offers_bids_response(self, data: Dict):
@@ -83,6 +104,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
         self.submit_matches(recommendations)
 
     def _on_match(self, data: Dict):
+        self.logger.log_recommendations_response(self._markets_cache, data)
         self.on_matched_recommendations_response(data=data)
 
     def on_matched_recommendations_response(self, data: Dict):

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from typing import Dict, List
 
 from gsy_framework.data_classes import BidOfferMatch
@@ -10,6 +11,10 @@ class MycoMatcherClientInterface(ABC):
     This interface defines the common user functionality that these clients should
     support.
     """
+
+    # Cached information about markets and time slots
+    _markets_cache: defaultdict(lambda: defaultdict(dict))
+
     @abstractmethod
     def request_offers_bids(self, filters: Dict):
         """This method contains the code that queries the open offers/bids in the simulation.
@@ -62,3 +67,20 @@ class MycoMatcherClientInterface(ABC):
 
     def on_area_map_response(self, data: Dict):
         """Updated Area UUID Name map event handler."""
+
+    def _cache_markets_information(self, data: Dict):
+        """Store information about markets in a cache, to be reused in later events.
+
+        Structure example:
+            {
+                "<market-id>": {
+                    "<time-slot-1>": {"market_type_name": "<market-type-name>"}
+                    "<time-slot-2>": {"market_type_name": "<market-type-name>"}
+                }
+            }
+        """
+        self._markets_cache = defaultdict(lambda: defaultdict(dict))  # Reset existing cache
+        for market_id, time_slots in data["bids_offers"].items():
+            for time_slot, slot_info in time_slots.items():
+                self._markets_cache[market_id][time_slot][
+                    "market_type_name"] = slot_info["market_type_name"]
