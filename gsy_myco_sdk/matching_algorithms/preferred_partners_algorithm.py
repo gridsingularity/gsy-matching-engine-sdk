@@ -206,7 +206,7 @@ class PreferredPartnersMatchingAlgorithm(BaseMatchingAlgorithm):
                 recommendation = BidOfferMatch(
                     market_id=market_id,
                     time_slot=time_slot,
-                    bid=bid, offer=offer,
+                    bid=deepcopy(bid), offer=deepcopy(offer),
                     selected_energy=selected_energy,
                     trade_rate=bid_required_clearing_rate,
                     matching_requirements={
