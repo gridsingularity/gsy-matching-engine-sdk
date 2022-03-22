@@ -1,6 +1,5 @@
 import json
 import logging
-from collections import defaultdict
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Dict
 
@@ -26,8 +25,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
 
         self.logger_helper = MycoMatcherLogger
-        # Cached information about markets and time slots
-        self._markets_cache = defaultdict(lambda: defaultdict(dict))
+        self._markets_cache = None  # Cached information about markets and time slots
 
         self._connect_to_simulation()
 
@@ -99,7 +97,6 @@ class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-
                 }
 
         """
-        self._cache_markets_information(data)
         self.on_offers_bids_response(data=data)
 
     def on_offers_bids_response(self, data: Dict):
@@ -114,6 +111,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-
         pass
 
     def _on_tick(self, data: Dict):
+        self._cache_markets_information(data)
         self.on_tick(data=data)
 
     def _on_market_cycle(self, data: Dict):

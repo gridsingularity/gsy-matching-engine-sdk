@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from collections import defaultdict
 from typing import Dict, List
 
 from gsy_framework.data_classes import BidOfferMatch
@@ -12,8 +11,7 @@ class MycoMatcherClientInterface(ABC):
     support.
     """
 
-    # Cached information about markets and time slots
-    _markets_cache: defaultdict(lambda: defaultdict(dict))
+    _markets_cache: Dict[str, Dict]  # Cached information about markets and time slots
 
     @abstractmethod
     def request_offers_bids(self, filters: Dict):
@@ -68,19 +66,13 @@ class MycoMatcherClientInterface(ABC):
     def on_area_map_response(self, data: Dict):
         """Updated Area UUID Name map event handler."""
 
-    def _cache_markets_information(self, data: Dict):
+    def _cache_markets_information(self, data: Dict[str, Dict]):
         """Store information about markets in a cache, to be reused in later events.
 
         Structure example:
             {
-                "<market-id>": {
-                    "<time-slot-1>": {"market_type_name": "<market-type-name>"}
-                    "<time-slot-2>": {"market_type_name": "<market-type-name>"}
-                }
+                "<market-id-1>": {"type_name": "<market-type-name>", "time_slots": [...]}
+                "<market-id-2>": {"type_name": "<market-type-name>", "time_slots": [...]}
             }
         """
-        self._markets_cache = defaultdict(lambda: defaultdict(dict))  # Reset existing cache
-        for market_id, time_slots in data["bids_offers"].items():
-            for time_slot, slot_info in time_slots.items():
-                self._markets_cache[market_id][time_slot][
-                    "market_type_name"] = slot_info["market_type_name"]
+        self._markets_cache = data["markets_info"]  # Replace existing cache

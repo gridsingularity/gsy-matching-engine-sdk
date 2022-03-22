@@ -1,6 +1,5 @@
 # pylint: disable=too-many-instance-attributes
 import logging
-from collections import defaultdict
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Dict
 
@@ -32,8 +31,7 @@ class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         self.url_prefix = f"{self.domain_name}/external-connection/api/{self.simulation_id}"
 
         self._logger_helper = MycoMatcherLogger
-        # Cached information about markets and time slots
-        self._markets_cache = defaultdict(lambda: defaultdict(dict))
+        self._markets_cache = None  # Cached information about markets and time slots
         self._start_websocket_connection()
 
     def _start_websocket_connection(self):
@@ -56,7 +54,6 @@ class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         self._get_request(f"{self.url_prefix}/offers-bids", {"filters": filters})
 
     def _on_offers_bids_response(self, data: Dict):
-        self._cache_markets_information(data)
         self.on_offers_bids_response(data)
 
     def on_offers_bids_response(self, data: Dict):
@@ -71,6 +68,7 @@ class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         pass
 
     def _on_tick(self, data):
+        self._cache_markets_information(data)
         self.on_tick(data)
 
     def _on_market_cycle(self, data):

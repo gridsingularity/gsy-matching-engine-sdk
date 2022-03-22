@@ -1,7 +1,7 @@
 """Module for the logger used by Myco matcher classes."""
 
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 from gsy_framework.constants_limits import DEFAULT_PRECISION
 from tabulate import tabulate
@@ -14,16 +14,27 @@ class MycoMatcherLogger:
     """Custom logger used by instances of Myco matchers."""
 
     @staticmethod
-    def log_recommendations_response(markets: Dict, data: Dict) -> None:
+    def _get_market_type_name_by_time_slot(
+            markets_info: Dict[str, Dict], time_slot: str) -> Optional[str]:
+        """Iterate through all market objects to find the one that contains the current time slot.
+
+        NOTE: Future market objects contain multiple time slots.
+        """
+        for market_info in markets_info.values():
+            if time_slot in market_info["time_slots"]:
+                return market_info["type_name"]
+
+        return None
+
+    @classmethod
+    def log_recommendations_response(cls, markets_info: Dict, data: Dict) -> None:
         """Log the response data of recommendations sent to the clearing mechanism.
 
         Args:
-            markets: a dictionary with the following structure:
+            markets_info: a dictionary with the following structure:
                 {
-                    "<market-id>": {
-                        "<time-slot-1>": {"market_type_name": "<market-type-name>"}
-                        "<time-slot-2>": {"market_type_name": "<market-type-name>"}
-                    }
+                    "<market-id-1>": {"type_name": "<market-type-name>", "time_slots": [...]}
+                    "<market-id-2>": {"type_name": "<market-type-name>", "time_slots": [...]}
                 }
         """
         recommendations = data["recommendations"]
@@ -44,11 +55,8 @@ class MycoMatcherLogger:
         index = 1
 
         for recommendation in recommendations:
-            cached_market_info = markets.get(recommendation["market_id"])
             time_slot = recommendation["time_slot"]
-            market_type_name = cached_market_info[time_slot][
-                "market_type_name"] if cached_market_info else "Unknown"
-
+            market_type_name = cls._get_market_type_name_by_time_slot(markets_info, time_slot)
             bid = recommendation["bid"]
             offer = recommendation["offer"]
             offer_data = (f"{round(offer['energy'], DEFAULT_PRECISION)}-"
