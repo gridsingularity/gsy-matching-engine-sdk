@@ -33,8 +33,8 @@ class MycoMatcherLogger:
         Args:
             markets_info: a dictionary with the following structure:
                 {
-                    "<market-id-1>": {"type_name": "<market-type-name>", "time_slots": [...]}
-                    "<market-id-2>": {"type_name": "<market-type-name>", "time_slots": [...]}
+                    "<market-id-1>": {"type_name": "<market-type-name>", "time_slots": {...}}
+                    "<market-id-2>": {"type_name": "<market-type-name>", "time_slots": {...}}
                 }
         """
         recommendations = data["recommendations"]

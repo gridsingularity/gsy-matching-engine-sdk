@@ -75,4 +75,10 @@ class MycoMatcherClientInterface(ABC):
                 "<market-id-2>": {"type_name": "<market-type-name>", "time_slots": [...]}
             }
         """
-        self._markets_cache = data["markets_info"]  # Replace existing cache
+        markets_info = data["markets_info"]
+        # Convert the list of time slots of each market into a set for improved performance
+        for market_id, market_info in markets_info.items():
+            time_slots = market_info["time_slots"]
+            markets_info[market_id]["time_slots"] = set(time_slots)
+
+        self._markets_cache = markets_info  # Replace existing cache
