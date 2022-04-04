@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 from gsy_myco_sdk import __version__
 
-BRANCH = os.environ.get("BRANCH", "master")
+GSY_FRAMEWORK_BRANCH = os.environ.get("GSY_FRAMEWORK_BRANCH", "master")
 
 
 try:
@@ -14,7 +14,7 @@ try:
         REQUIREMENTS = [r.partition("#")[0] for r in req if not r.startswith("-e")]
         REQUIREMENTS.extend(
             ["gsy-framework @ "
-             f"git+https://github.com/gridsingularity/gsy-framework.git@{BRANCH}"])
+             f"git+https://github.com/gridsingularity/gsy-framework.git@{GSY_FRAMEWORK_BRANCH}"])
 
 except OSError:
     # Shouldn't happen
