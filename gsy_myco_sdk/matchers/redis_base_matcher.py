@@ -5,7 +5,7 @@ from typing import Dict
 
 from gsy_framework.client_connections.utils import log_market_progression
 from gsy_framework.utils import execute_function_util, wait_until_timeout_blocking
-from redis import StrictRedis
+from redis import Redis
 
 from gsy_myco_sdk.constants import MAX_WORKER_THREADS
 from gsy_myco_sdk.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
@@ -16,7 +16,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):
     def __init__(self, redis_url="redis://localhost:6379", pubsub_thread=None):
         self.simulation_id = None
         self.pubsub_thread = pubsub_thread
-        self.redis_db = StrictRedis.from_url(redis_url)
+        self.redis_db = Redis.from_url(redis_url)
         self.pubsub = self.redis_db.pubsub() if pubsub_thread is None else pubsub_thread
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
         self._connect_to_simulation()
