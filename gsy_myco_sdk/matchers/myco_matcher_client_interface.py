@@ -10,6 +10,9 @@ class MycoMatcherClientInterface(ABC):
     This interface defines the common user functionality that these clients should
     support.
     """
+
+    _markets_cache: Dict[str, Dict]  # Cached information about markets and time slots
+
     @abstractmethod
     def request_offers_bids(self, filters: Dict):
         """This method contains the code that queries the open offers/bids in the simulation.
@@ -62,3 +65,20 @@ class MycoMatcherClientInterface(ABC):
 
     def on_area_map_response(self, data: Dict):
         """Updated Area UUID Name map event handler."""
+
+    def _cache_markets_information(self, data: Dict[str, Dict]):
+        """Store information about markets in a cache, to be reused in later events.
+
+        Structure example:
+            {
+                "<market-id-1>": {"type_name": "<market-type-name>", "time_slots": [...]}
+                "<market-id-2>": {"type_name": "<market-type-name>", "time_slots": [...]}
+            }
+        """
+        markets_info = data["markets_info"]
+        # Convert the list of time slots of each market into a set for improved performance
+        for market_id, market_info in markets_info.items():
+            time_slots = market_info["time_slots"]
+            markets_info[market_id]["time_slots"] = set(time_slots)
+
+        self._markets_cache = markets_info  # Replace existing cache

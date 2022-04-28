@@ -16,10 +16,10 @@ the API of the GSy Exchange external connections in order to be able to dynamica
 electrical grid, query the open bids/offers and post trading recommendations back to GSy Exchange.
 
 For local test runs of GSy Exchange Redis (https://redis.io/) is used as communication protocol.
-In the following commands for the local test run are marked with `LOCAL`. 
+In the following commands for the local test run are marked with `LOCAL`.
 
 For communication with collaborations or canary networks on https://d3a.io, a RESTful API is used.
-In the following commands for the connection via the REST API are marked with `REST`. 
+In the following commands for the connection via the REST API are marked with `REST`.
 
 ## Installation Instructions
 
@@ -47,7 +47,7 @@ The following parameters can be set via the CLI:
 - `domain-name` --> GSy Exchange domain URL
 - `web-socket` --> GSy Exchange websocket URL
 - `simulation-id` --> UUID of the collaboration or Canary Network (CN)
-- `run-on-redis` --> This flag can be set for local testing of the API client, where no user authentication is required. 
+- `run-on-redis` --> This flag can be set for local testing of the API client, where no user authentication is required.
   For that, a locally running redis server and GSy Exchange simulation are needed.
 #### Examples
 - For local testing of the API client:
@@ -56,13 +56,13 @@ The following parameters can be set via the CLI:
   ```
 - For testing your api client script on remote server hosting GSy Exchange's collaboration/CNs.
     - If user's client script resides on `gsy_myco_sdk/setups`
-    
+
   ```
     gsy-myco-sdk run -u <username> -p <password> --setup myco_matcher -s <simulation-uuid> ...
     ```
-    
+
     - If user's client script resides on a different directory, then its path needs to be set via `--base-setup-path`
-    
+
   ```
     gsy-myco-sdk run -u <username> -p <password> --base-setup-path <absolute/relative-path-to-your-client-script> --setup <name-of-your-script> ...
     ```
@@ -71,8 +71,8 @@ The following parameters can be set via the CLI:
 
 
 ### Events
-In order to facilitate offer and bid management and scheduling, 
-the client will get notified via events. 
+In order to facilitate offer and bid management and scheduling,
+the client will get notified via events.
 It is possible to capture these events and perform operations as a reaction to them
 by overriding the corresponding methods.
 - when a new market cycle is triggered the `on_market_cycle` method is called
@@ -88,10 +88,10 @@ by overriding the corresponding methods.
 The constructor of the API class can connect and register automatically to a running collaboration:
 - `REST`
     ```
-    matching_client = BaseMatcher()
+    matching_client = RestBaseMatcher()
     ```
 - `LOCAL`
-    ``` 
+    ```
     matching_client = RedisBaseMatcher()
     ```
 ---
@@ -100,29 +100,29 @@ The constructor of the API class can connect and register automatically to a run
 
 `Matcher` instances provide methods that can simplify specific operations. Below we have a demo:
 
-- Fire a request to get filtered open bids/offers in the simulation: 
+- Fire a request to get filtered open bids/offers in the simulation:
 
     ```python
     ```python
-      from gsy_myco_sdk.matchers.base_matcher import BaseMatcher
-      matching_client = BaseMatcher()
-      matching_client.request_offers_bids(filters={}) 
+      from gsy_myco_sdk.matchers.rest_base_matcher import RestBaseMatcher
+      matching_client = RestBaseMatcher()
+      matching_client.request_offers_bids(filters={})
       ```
     ```
-    
+
     Supported filters include:
-    - `markets`: list of market ids, only fetch bids/offers in these markets (If not provided, all markets are included). 
+    - `markets`: list of market ids, only fetch bids/offers in these markets (If not provided, all markets are included).
     - `energy_type`: energy type of offers to be returned.
-          
+
     The bids_offers response can be received in the method named `on_offers_bids_response`, this one can be overridden to decide the recommendations algorithm and fires a call to submit_matches()
 
-  
+
 - Posts the trading bid/offer pairs recommendations back to GSy Exchange, can be called from the overridden on_offers_bids_response:
 
     ```python
     def on_offers_bids_response(self, data):
       """
-      Posted recommendations should be in the format: 
+      Posted recommendations should be in the format:
       [BidOfferMatch.serializable_dict(), BidOfferMatch.serializable_dict()]
       """
       bids_offers = data.get("bids_offers")

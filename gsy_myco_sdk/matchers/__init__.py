@@ -1,6 +1,6 @@
 __all__ = [
-    "BaseMatcher",
+    "RestBaseMatcher",
     "RedisBaseMatcher"
 ]
-from .base_matcher import BaseMatcher
+from .rest_base_matcher import RestBaseMatcher
 from .redis_base_matcher import RedisBaseMatcher
