@@ -62,7 +62,7 @@ def main(log_level):
 @main.command()
 @click.option("-b", "--base-setup-path", default=None, type=str,
               help="Accept absolute or relative path for matcher script")
-@click.option("--setup", "setup_module_name", default="base_matcher_setup",
+@click.option("--setup", "setup_module_name", required=True,
               help="Setup module of matcher script. Available modules: [{}]".format(
                   ", ".join(_setup_modules)))
 @click.option("-u", "--username", default=None, type=str, help="GSy Exchange username")
