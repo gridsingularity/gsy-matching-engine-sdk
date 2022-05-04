@@ -4,7 +4,7 @@ from time import sleep
 
 from gsy_myco_sdk.matchers import RedisBaseMatcher
 from gsy_myco_sdk.matchers.rest_base_matcher import RestBaseMatcher
-from gsy_myco_sdk.matching_algorithms import AttributedMatchingAlgorithm
+from gsy_framework.matching_algorithms import AttributedMatchingAlgorithm
 
 if os.environ["MYCO_CLIENT_RUN_ON_REDIS"] == "true":
     base_matcher = RedisBaseMatcher
