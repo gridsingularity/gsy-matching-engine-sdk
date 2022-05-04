@@ -2,17 +2,20 @@ import logging
 import os
 from time import sleep
 
+from gsy_framework.matching_algorithms import AttributedMatchingAlgorithm
+
 from gsy_myco_sdk.matchers import RedisBaseMatcher
 from gsy_myco_sdk.matchers.rest_base_matcher import RestBaseMatcher
-from gsy_myco_sdk.matching_algorithms import AttributedMatchingAlgorithm
 
 if os.environ["MYCO_CLIENT_RUN_ON_REDIS"] == "true":
-    base_matcher = RedisBaseMatcher
+    BaseMatcher = RedisBaseMatcher
 else:
-    base_matcher = RestBaseMatcher
+    BaseMatcher = RestBaseMatcher
 
 
-class MycoMatcher(base_matcher):
+class MycoMatcher(BaseMatcher):
+    """Class that demonstrates how to override and add functionality to the Myco Matcher."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_finished = False
