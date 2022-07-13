@@ -36,6 +36,7 @@ def compile():  # pylint: disable=redefined-builtin
     with hide("running", "stdout"):
         puts(green("Generating package requirement file."), show_prefix=True)
         local("pip-compile --output-file=requirements/base.txt requirements/base.in")
+        local("pip-compile --output-file=requirements/tests.txt requirements/tests.in")
 
 
 @task(default=True)
