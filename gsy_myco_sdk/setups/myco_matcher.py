@@ -1,3 +1,4 @@
+import logging
 import os
 from time import sleep
 
@@ -5,8 +6,6 @@ from gsy_framework.matching_algorithms import AttributedMatchingAlgorithm
 
 from gsy_myco_sdk.matchers import RedisBaseMatcher
 from gsy_myco_sdk.matchers.rest_base_matcher import RestBaseMatcher
-
-from gsy_myco_sdk.utils import log_recommendations_response
 
 if os.environ["MYCO_CLIENT_RUN_ON_REDIS"] == "true":
     BaseMatcher = RedisBaseMatcher
@@ -47,7 +46,7 @@ class MycoMatcher(BaseMatcher):
             self.submit_matches(recommendations)
 
     def on_matched_recommendations_response(self, data):
-        log_recommendations_response(data)
+        logging.info("Trades recommendations response returned %s", data)
 
     def on_event_or_response(self, data):
         pass
