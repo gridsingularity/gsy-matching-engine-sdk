@@ -54,7 +54,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Install Tox
-        run: pip install tox
+        run: pip install tox==3.24.4
       - name: Run Tox
         run: tox -e $TOXENV
         env:

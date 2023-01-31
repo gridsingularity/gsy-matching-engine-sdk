@@ -61,10 +61,10 @@ class MycoMatcherLogger:
             offer = recommendation["offer"]
             offer_data = (f"{round(offer['energy'], DEFAULT_PRECISION)}-"
                           f"{round(offer['original_price'], DEFAULT_PRECISION)}-"
-                          f"{offer['seller_origin_id']}-{offer['time_slot']}")
+                          f"{offer['seller']['origin_uuid']}-{offer['time_slot']}")
             bid_data = (f"{round(bid['energy'], DEFAULT_PRECISION)}-"
                         f"{round(bid['original_price'], DEFAULT_PRECISION)}-"
-                        f"{bid['buyer_origin_id']}-{bid['time_slot']}")
+                        f"{bid['buyer']['origin_uuid']}-{bid['time_slot']}")
             if offer_data not in orders_cache or bid_data not in orders_cache:
                 recommendations_table.append([
                     index,
