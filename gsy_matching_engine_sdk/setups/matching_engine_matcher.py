@@ -4,17 +4,17 @@ from time import sleep
 
 from gsy_framework.matching_algorithms import AttributedMatchingAlgorithm
 
-from gsy_myco_sdk.matchers import RedisBaseMatcher
-from gsy_myco_sdk.matchers.rest_base_matcher import RestBaseMatcher
+from gsy_matching_engine_sdk.matchers import RedisBaseMatcher
+from gsy_matching_engine_sdk.matchers.rest_base_matcher import RestBaseMatcher
 
-if os.environ["MYCO_CLIENT_RUN_ON_REDIS"] == "true":
+if os.environ["MATCHING_ENGINE_RUN_ON_REDIS"] == "true":
     BaseMatcher = RedisBaseMatcher
 else:
     BaseMatcher = RestBaseMatcher
 
 
-class MycoMatcher(BaseMatcher):
-    """Class that demonstrates how to override and add functionality to the Myco Matcher."""
+class MatchingEngineMatcher(BaseMatcher):
+    """Class that demonstrates how to override and add functionality to the MatchingEngine Matcher."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -55,7 +55,7 @@ class MycoMatcher(BaseMatcher):
         self.is_finished = True
 
 
-matcher = MycoMatcher()
+matcher = MatchingEngineMatcher()
 
 while not matcher.is_finished:
     sleep(0.5)

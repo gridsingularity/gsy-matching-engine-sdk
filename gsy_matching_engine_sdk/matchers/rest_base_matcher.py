@@ -7,18 +7,18 @@ from gsy_framework.client_connections.utils import (
     RestCommunicationMixin, retrieve_jwt_key_from_server)
 from gsy_framework.client_connections.websocket_connection import WebsocketThread
 
-from gsy_myco_sdk.constants import MAX_WORKER_THREADS
-from gsy_myco_sdk.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
-from gsy_myco_sdk.matchers.myco_matcher_logger import MycoMatcherLogger
-from gsy_myco_sdk.utils import (
+from gsy_matching_engine_sdk.constants import MAX_WORKER_THREADS
+from gsy_matching_engine_sdk.matchers.matching_engine_matcher_client_interface import MatchingEngineMatcherClientInterface
+from gsy_matching_engine_sdk.matchers.matching_engine_matcher_logger import MatchingEngineMatcherLogger
+from gsy_matching_engine_sdk.utils import (
     domain_name_from_env, simulation_id_from_env, websocket_domain_name_from_env)
-from gsy_myco_sdk.websocket_device import WebsocketMessageReceiver
+from gsy_matching_engine_sdk.websocket_device import WebsocketMessageReceiver
 
 
 LOGGER = logging.getLogger(__name__)
 
 
-class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
+class RestBaseMatcher(MatchingEngineMatcherClientInterface, RestCommunicationMixin):
     """Handle order matching via rest connection."""
     def __init__(self, simulation_id=None, domain_name=None, websocket_domain_name=None):
         self.simulation_id = simulation_id if simulation_id else simulation_id_from_env()
@@ -30,13 +30,13 @@ class RestBaseMatcher(MycoMatcherClientInterface, RestCommunicationMixin):
         self._create_jwt_refresh_timer(self.domain_name)
         self.url_prefix = f"{self.domain_name}/external-connection/api/{self.simulation_id}"
 
-        self._logger_helper = MycoMatcherLogger
+        self._logger_helper = MatchingEngineMatcherLogger
         self._markets_cache = None  # Cached information about markets and time slots
         self._start_websocket_connection()
 
     def _start_websocket_connection(self):
         self.dispatcher = WebsocketMessageReceiver(self)
-        websocket_uri = f"{self.websocket_domain_name}/{self.simulation_id}/myco/"
+        websocket_uri = f"{self.websocket_domain_name}/{self.simulation_id}/matching-engine/"
         self.websocket_thread = WebsocketThread(websocket_uri, self.domain_name,
                                                 self.dispatcher)
         self.websocket_thread.start()

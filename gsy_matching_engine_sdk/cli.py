@@ -1,6 +1,6 @@
 """
 Copyright 2018 Grid Singularity
-This file is part of GSy Myco SDK.
+This file is part of GSy Matching Engine SDK.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@ from colorlog import ColoredFormatter
 from gsy_framework.exceptions import GSyException
 from gsy_framework.utils import iterate_over_all_modules
 
-import gsy_myco_sdk.setups as setups
-from gsy_myco_sdk.constants import SETUP_FILE_PATH
-from gsy_myco_sdk.utils import (
+import gsy_matching_engine_sdk.setups as setups
+from gsy_matching_engine_sdk.constants import SETUP_FILE_PATH
+from gsy_matching_engine_sdk.utils import (
     simulation_id_from_env, domain_name_from_env,
     websocket_domain_name_from_env)
 
@@ -40,7 +40,7 @@ modules_path = setups.__path__ if SETUP_FILE_PATH is None else [SETUP_FILE_PATH,
 _setup_modules = iterate_over_all_modules(modules_path)
 
 
-@click.group(name="gsy-myco-sdk", cls=DefaultGroup, default="run", default_if_no_args=True,
+@click.group(name="gsy-matching-engine-sdk", cls=DefaultGroup, default="run", default_if_no_args=True,
              context_settings={"max_content_width": 120})
 @click.option("-l", "--log-level", type=Choice(list(logging._nameToLevel.keys())), default="ERROR",
               show_default=True, help="Log level")
@@ -82,20 +82,20 @@ def run(base_setup_path, setup_module_name,
         os.environ["API_CLIENT_USERNAME"] = username
     if password is not None:
         os.environ["API_CLIENT_PASSWORD"] = password
-    os.environ["MYCO_CLIENT_DOMAIN_NAME"] = (
+    os.environ["MATCHING_ENGINE_DOMAIN_NAME"] = (
         domain_name if domain_name else domain_name_from_env())
-    os.environ["MYCO_CLIENT_WEBSOCKET_DOMAIN_NAME"] = (
+    os.environ["MATCHING_ENGINE_WEBSOCKET_DOMAIN_NAME"] = (
         web_socket if web_socket else websocket_domain_name_from_env())
-    os.environ["MYCO_CLIENT_SIMULATION_ID"] = (
+    os.environ["MATCHING_ENGINE_SIMULATION_ID"] = (
         simulation_id if simulation_id else simulation_id_from_env())
-    os.environ["MYCO_CLIENT_RUN_ON_REDIS"] = "true" if run_on_redis else "false"
+    os.environ["MATCHING_ENGINE_RUN_ON_REDIS"] = "true" if run_on_redis else "false"
     load_client_script(base_setup_path, setup_module_name)
 
 
 def load_client_script(base_setup_path, setup_module_name):
     try:
         if base_setup_path is None:
-            importlib.import_module(f"gsy_myco_sdk.setups.{setup_module_name}")
+            importlib.import_module(f"gsy_matching_engine_sdk.setups.{setup_module_name}")
         else:
             sys.path.append(base_setup_path)
             importlib.import_module(setup_module_name)
