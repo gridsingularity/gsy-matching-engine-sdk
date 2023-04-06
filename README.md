@@ -103,11 +103,9 @@ The constructor of the API class can connect and register automatically to a run
 - Fire a request to get filtered open bids/offers in the simulation:
 
     ```python
-    ```python
-      from gsy_matching_engine_sdk.matchers.rest_base_matcher import RestBaseMatcher
-      matching_client = RestBaseMatcher()
-      matching_client.request_offers_bids(filters={})
-      ```
+    from gsy_matching_engine_sdk.matchers.rest_base_matcher import RestBaseMatcher
+    matching_client = RestBaseMatcher()
+    matching_client.request_offers_bids(filters={})
     ```
 
     Supported filters include:
