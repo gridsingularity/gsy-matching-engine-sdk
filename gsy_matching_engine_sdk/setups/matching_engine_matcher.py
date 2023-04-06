@@ -14,7 +14,10 @@ else:
 
 
 class MatchingEngineMatcher(BaseMatcher):
-    """Class that demonstrates how to override and add functionality to the MatchingEngine Matcher."""
+    """
+    Class that demonstrates how to override and add functionality
+    to the MatchingEngine Matcher.
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

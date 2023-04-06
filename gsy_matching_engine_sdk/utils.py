@@ -15,5 +15,8 @@ def websocket_domain_name_from_env():
 
 
 def simulation_id_from_env():
-    """Retrieve the ID of the simulation that the Matching Engine should target from the env variables."""
+    """
+    Retrieve the ID of the simulation that the Matching Engine
+    should target from the env variables.
+    """
     return os.environ.get("MATCHING_ENGINE_SIMULATION_ID", MATCHING_ENGINE_SIMULATION_ID)

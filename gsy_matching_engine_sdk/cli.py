@@ -40,8 +40,8 @@ modules_path = setups.__path__ if SETUP_FILE_PATH is None else [SETUP_FILE_PATH,
 _setup_modules = iterate_over_all_modules(modules_path)
 
 
-@click.group(name="gsy-matching-engine-sdk", cls=DefaultGroup, default="run", default_if_no_args=True,
-             context_settings={"max_content_width": 120})
+@click.group(name="gsy-matching-engine-sdk", cls=DefaultGroup, default="run",
+             default_if_no_args=True, context_settings={"max_content_width": 120})
 @click.option("-l", "--log-level", type=Choice(list(logging._nameToLevel.keys())), default="ERROR",
               show_default=True, help="Log level")
 def main(log_level):

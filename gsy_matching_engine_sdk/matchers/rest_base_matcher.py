@@ -8,8 +8,10 @@ from gsy_framework.client_connections.utils import (
 from gsy_framework.client_connections.websocket_connection import WebsocketThread
 
 from gsy_matching_engine_sdk.constants import MAX_WORKER_THREADS
-from gsy_matching_engine_sdk.matchers.matching_engine_matcher_client_interface import MatchingEngineMatcherClientInterface
-from gsy_matching_engine_sdk.matchers.matching_engine_matcher_logger import MatchingEngineMatcherLogger
+from gsy_matching_engine_sdk.matchers.matching_engine_matcher_client_interface import (
+    MatchingEngineMatcherClientInterface)
+from gsy_matching_engine_sdk.matchers.matching_engine_matcher_logger import (
+    MatchingEngineMatcherLogger)
 from gsy_matching_engine_sdk.utils import (
     domain_name_from_env, simulation_id_from_env, websocket_domain_name_from_env)
 from gsy_matching_engine_sdk.websocket_device import WebsocketMessageReceiver

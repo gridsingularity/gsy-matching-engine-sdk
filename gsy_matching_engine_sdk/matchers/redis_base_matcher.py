@@ -8,14 +8,17 @@ from gsy_framework.utils import execute_function_util, wait_until_timeout_blocki
 from redis import Redis
 
 from gsy_matching_engine_sdk.constants import MAX_WORKER_THREADS
-from gsy_matching_engine_sdk.matchers.matching_engine_matcher_client_interface import MatchingEngineMatcherClientInterface
-from gsy_matching_engine_sdk.matchers.matching_engine_matcher_logger import MatchingEngineMatcherLogger
+from gsy_matching_engine_sdk.matchers.matching_engine_matcher_client_interface import (
+    MatchingEngineMatcherClientInterface)
+from gsy_matching_engine_sdk.matchers.matching_engine_matcher_logger import (
+    MatchingEngineMatcherLogger)
 
 
 LOGGER = logging.getLogger(__name__)
 
 
-class RedisBaseMatcher(MatchingEngineMatcherClientInterface):  # pylint: disable=too-many-instance-attributes
+class RedisBaseMatcher(MatchingEngineMatcherClientInterface):
+    # pylint: disable=too-many-instance-attributes
     """Handle order matching via redis connection."""
     def __init__(self, redis_url="redis://localhost:6379", pubsub_thread=None):
         self.simulation_id = None

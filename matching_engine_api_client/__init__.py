@@ -9,7 +9,8 @@ console_handler.setFormatter(logging.Formatter("%(levelname)s: %(message)s"))
 logger.addHandler(console_handler)
 
 logger.warning(
-    "The myco_api_client package name will be deprecated soon. Please use gsy_matching_engine_sdk instead.")
+    "The myco_api_client package name will be deprecated soon. "
+    "Please use gsy_matching_engine_sdk instead.")
 
 __all__ = ["gsy_matching_engine_sdk"]
 
