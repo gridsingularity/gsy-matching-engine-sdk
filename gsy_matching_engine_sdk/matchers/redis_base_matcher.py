@@ -7,15 +7,18 @@ from gsy_framework.client_connections.utils import log_market_progression
 from gsy_framework.utils import execute_function_util, wait_until_timeout_blocking
 from redis import Redis
 
-from gsy_myco_sdk.constants import MAX_WORKER_THREADS
-from gsy_myco_sdk.matchers.myco_matcher_client_interface import MycoMatcherClientInterface
-from gsy_myco_sdk.matchers.myco_matcher_logger import MycoMatcherLogger
+from gsy_matching_engine_sdk.constants import MAX_WORKER_THREADS
+from gsy_matching_engine_sdk.matchers.matching_engine_matcher_client_interface import (
+    MatchingEngineMatcherClientInterface)
+from gsy_matching_engine_sdk.matchers.matching_engine_matcher_logger import (
+    MatchingEngineMatcherLogger)
 
 
 LOGGER = logging.getLogger(__name__)
 
 
-class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-instance-attributes
+class RedisBaseMatcher(MatchingEngineMatcherClientInterface):
+    # pylint: disable=too-many-instance-attributes
     """Handle order matching via redis connection."""
     def __init__(self, redis_url="redis://localhost:6379", pubsub_thread=None):
         self.simulation_id = None
@@ -24,7 +27,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-
         self.pubsub = self.redis_db.pubsub() if pubsub_thread is None else pubsub_thread
         self.executor = ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS)
 
-        self.logger_helper = MycoMatcherLogger
+        self.logger_helper = MatchingEngineMatcherLogger
         self._markets_cache = None  # Cached information about markets and time slots
 
         self._connect_to_simulation()
@@ -32,7 +35,7 @@ class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-
     def _connect_to_simulation(self):
         """Subscribe to redis response channels and thus connect to a simulation."""
         self._get_simulation_id(is_blocking=True)
-        self.redis_channels_prefix = f"external-myco/{self.simulation_id}"
+        self.redis_channels_prefix = f"external-matching-engine/{self.simulation_id}"
         self._subscribe_to_response_channels()
         LOGGER.info("Connection to gsy-e has been established.")
 
@@ -49,10 +52,10 @@ class RedisBaseMatcher(MycoMatcherClientInterface):  # pylint: disable=too-many-
             self.pubsub_thread = self.pubsub.run_in_thread(daemon=True)
 
     def _get_simulation_id(self, is_blocking=True):
-        self.pubsub.subscribe(**{"external-myco/simulation-id/response/":
+        self.pubsub.subscribe(**{"external-matching-engine/simulation-id/response/":
                                  self._set_simulation_id})
         self._start_pubsub_thread()
-        self.redis_db.publish("external-myco/simulation-id/", json.dumps({}))
+        self.redis_db.publish("external-matching-engine/simulation-id/", json.dumps({}))
 
         if is_blocking:
             try:

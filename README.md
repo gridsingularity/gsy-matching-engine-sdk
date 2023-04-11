@@ -1,6 +1,6 @@
-# GSy Myco SDK
+# GSy Matching Engine SDK
 ## Table of Content
-- [GSy Myco SDK](#gsy-myco-sdk)
+- [GSy Matching Engine SDK](#gsy-matching-engine-sdk)
   * [Overview](#overview)
   * [Installation Instructions](#installation-instructions)
   * [How to use the Client](#how-to-use-the-client)
@@ -11,7 +11,7 @@
 
 ## Overview
 
-GSy Myco SDK is responsible for communicating with a running collaboration of GSy Exchange. The client uses
+GSy Matching Engine SDK is responsible for communicating with a running collaboration of GSy Exchange. The client uses
 the API of the GSy Exchange external connections in order to be able to dynamically connect to the simulated
 electrical grid, query the open bids/offers and post trading recommendations back to GSy Exchange.
 
@@ -23,10 +23,10 @@ In the following commands for the connection via the REST API are marked with `R
 
 ## Installation Instructions
 
-Installation of gsy-myco-sdk using pip:
+Installation of gsy-matching-engine-sdk using pip:
 
 ```
-pip install git+https://github.com/gridsingularity/gsy-myco-sdk.git
+pip install git+https://github.com/gridsingularity/gsy-matching-engine-sdk.git
 ```
 ---
 
@@ -36,11 +36,11 @@ pip install git+https://github.com/gridsingularity/gsy-myco-sdk.git
 In order to get help, please run:
 
 ```
-gsy-myco-sdk run --help
+gsy-matching-engine-sdk run --help
 ```
 
 The following parameters can be set via the CLI:
-- `base-setup-path` --> Path where user's client script resides, otherwise `gsy_myco_sdk/setups` is used.
+- `base-setup-path` --> Path where user's client script resides, otherwise `gsy_matching_engine_sdk/setups` is used.
 - `setup` --> Name of user's API client module/script.
 - `username` --> Username of agent authorized to communicate with respective collaboration or Canary Network (CN).
 - `password` --> Password of respective agent
@@ -52,19 +52,19 @@ The following parameters can be set via the CLI:
 #### Examples
 - For local testing of the API client:
   ```
-  gsy-myco-sdk --log-level ERROR run --setup myco_matcher --run-on-redis
+  gsy-matching-engine-sdk --log-level ERROR run --setup matching_engine_matcher --run-on-redis
   ```
 - For testing your api client script on remote server hosting GSy Exchange's collaboration/CNs.
-    - If user's client script resides on `gsy_myco_sdk/setups`
+    - If user's client script resides on `gsy_matching_engine_sdk/setups`
 
   ```
-    gsy-myco-sdk run -u <username> -p <password> --setup myco_matcher -s <simulation-uuid> ...
+    gsy-matching-engine-sdk run -u <username> -p <password> --setup matching_engine_matcher -s <simulation-uuid> ...
     ```
 
     - If user's client script resides on a different directory, then its path needs to be set via `--base-setup-path`
 
   ```
-    gsy-myco-sdk run -u <username> -p <password> --base-setup-path <absolute/relative-path-to-your-client-script> --setup <name-of-your-script> ...
+    gsy-matching-engine-sdk run -u <username> -p <password> --base-setup-path <absolute/relative-path-to-your-client-script> --setup <name-of-your-script> ...
     ```
 
 ---
@@ -103,11 +103,9 @@ The constructor of the API class can connect and register automatically to a run
 - Fire a request to get filtered open bids/offers in the simulation:
 
     ```python
-    ```python
-      from gsy_myco_sdk.matchers.rest_base_matcher import RestBaseMatcher
-      matching_client = RestBaseMatcher()
-      matching_client.request_offers_bids(filters={})
-      ```
+    from gsy_matching_engine_sdk.matchers.rest_base_matcher import RestBaseMatcher
+    matching_client = RestBaseMatcher()
+    matching_client.request_offers_bids(filters={})
     ```
 
     Supported filters include:

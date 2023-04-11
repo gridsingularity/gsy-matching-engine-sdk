@@ -1,10 +1,10 @@
-"""Setup module for the gsy-myco-sdk."""
+"""Setup module for the gsy-matching-engine-sdk."""
 
 import os
 
 from setuptools import find_packages, setup
 
-from gsy_myco_sdk import __version__
+from gsy_matching_engine_sdk import __version__
 
 GSY_FRAMEWORK_BRANCH = os.environ.get("GSY_FRAMEWORK_BRANCH", "master")
 
@@ -28,21 +28,21 @@ with open("README.md", "r", encoding="utf-8") as readme:
 VERSION = __version__
 
 setup(
-    name="gsy-myco-sdk",
-    description="Myco API Client",
+    name="gsy-matching-engine-sdk",
+    description="Matching Engine API Client",
     long_description=README,
     author="GridSingularity",
     author_email="contact@gridsingularity.com",
-    url="https://github.com/gridsingularity/gsy-myco-sdk",
+    url="https://github.com/gridsingularity/gsy-matching-engine-sdk",
     version=VERSION,
     packages=find_packages(where=".", exclude=["tests"]),
-    package_dir={"gsy_myco_sdk": "gsy_myco_sdk"},
+    package_dir={"gsy_matching_engine_sdk": "gsy_matching_engine_sdk"},
     package_data={},
     install_requires=REQUIREMENTS,
     entry_points={
         "console_scripts": [
-            "gsy-myco-sdk = gsy_myco_sdk.cli:main",
-            "myco = gsy_myco_sdk.cli:main"
+            "gsy-matching-engine-sdk = gsy_matching_engine_sdk.cli:main",
+            "matching-engine = gsy_matching_engine_sdk.cli:main"
         ]
     },
     zip_safe=False,

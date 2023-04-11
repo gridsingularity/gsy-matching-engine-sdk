@@ -1,4 +1,4 @@
-"""Module for the logger used by Myco matcher classes."""
+"""Module for the logger used by Matching Engine matcher classes."""
 
 import logging
 from typing import Dict, Optional
@@ -10,8 +10,8 @@ from tabulate import tabulate
 LOGGER = logging.getLogger(__name__)
 
 
-class MycoMatcherLogger:
-    """Custom logger used by instances of Myco matchers."""
+class MatchingEngineMatcherLogger:
+    """Custom logger used by instances of MatchingEngine matchers."""
 
     @staticmethod
     def _get_market_type_name_by_time_slot(
