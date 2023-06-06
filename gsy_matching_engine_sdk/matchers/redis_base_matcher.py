@@ -4,6 +4,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Dict
 
 from gsy_framework.client_connections.utils import log_market_progression
+from gsy_framework.redis_channels import SimulationCommandChannels, MatchingEngineChannels
 from gsy_framework.utils import execute_function_util, wait_until_timeout_blocking
 from redis import Redis
 
@@ -12,7 +13,6 @@ from gsy_matching_engine_sdk.matchers.matching_engine_matcher_client_interface i
     MatchingEngineMatcherClientInterface)
 from gsy_matching_engine_sdk.matchers.matching_engine_matcher_logger import (
     MatchingEngineMatcherLogger)
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,7 +35,6 @@ class RedisBaseMatcher(MatchingEngineMatcherClientInterface):
     def _connect_to_simulation(self):
         """Subscribe to redis response channels and thus connect to a simulation."""
         self._get_simulation_id(is_blocking=True)
-        self.redis_channels_prefix = f"external-matching-engine/{self.simulation_id}"
         self._subscribe_to_response_channels()
         LOGGER.info("Connection to gsy-e has been established.")
 
@@ -52,10 +51,12 @@ class RedisBaseMatcher(MatchingEngineMatcherClientInterface):
             self.pubsub_thread = self.pubsub.run_in_thread(daemon=True)
 
     def _get_simulation_id(self, is_blocking=True):
-        self.pubsub.subscribe(**{"external-matching-engine/simulation-id/response/":
-                                 self._set_simulation_id})
+        self.pubsub.subscribe(
+            **{MatchingEngineChannels(
+                self.simulation_id).simulation_id_response: self._set_simulation_id
+               })
         self._start_pubsub_thread()
-        self.redis_db.publish("external-matching-engine/simulation-id/", json.dumps({}))
+        self.redis_db.publish(MatchingEngineChannels.simulation_id, json.dumps({}))
 
         if is_blocking:
             try:
@@ -65,9 +66,10 @@ class RedisBaseMatcher(MatchingEngineMatcherClientInterface):
 
     def _subscribe_to_response_channels(self):
         channel_subs = {
-            f"{self.redis_channels_prefix}/events/":
-                self._on_event_or_response,
-            f"{self.redis_channels_prefix}/*/response/": self._on_event_or_response,
+            MatchingEngineChannels(self.simulation_id).events: self._on_event_or_response,
+            MatchingEngineChannels(self.simulation_id).response: self._on_event_or_response,
+            SimulationCommandChannels.response_channel(self.simulation_id, "area-map"):
+                self._on_area_map_response
         }
         self.pubsub.psubscribe(**channel_subs)
         self._start_pubsub_thread()
@@ -75,16 +77,18 @@ class RedisBaseMatcher(MatchingEngineMatcherClientInterface):
     def submit_matches(self, recommended_matches):
         LOGGER.debug("Sending recommendations %s", recommended_matches)
         data = {"recommended_matches": recommended_matches}
-        self.redis_db.publish(f"{self.redis_channels_prefix}/recommendations/", json.dumps(data))
+        self.redis_db.publish(
+            MatchingEngineChannels(self.simulation_id).recommendations, json.dumps(data))
 
     def request_offers_bids(self, filters: Dict = None):
         data = {"filters": filters}
-        self.redis_db.publish(f"{self.redis_channels_prefix}/offers-bids/", json.dumps(data))
+        self.redis_db.publish(
+            MatchingEngineChannels(self.simulation_id).offers_bids, json.dumps(data))
 
     def request_area_id_name_map(self):
         """Request area_id_name_map from simulation."""
-        channel = f"{self.simulation_id}/area-map/"
-        self.redis_db.publish(channel, json.dumps({}))
+        self.redis_db.publish(SimulationCommandChannels(
+            self.simulation_id).area_map, json.dumps({}))
 
     def _on_offers_bids_response(self, data: Dict):
         """Trigger actions when receiving the offers_bids_response event.
