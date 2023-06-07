@@ -56,7 +56,7 @@ jobs:
 
       - name: Validate parsed gsy-framework target branch
         env:
-          PARSED_GSY_FRAMEWORK_BRANCH: ${{ steps.parse_gsye_target_branch.outputs.PARSED_GSY_FRAMEWORK_BRANCH }}
+          PARSED_GSY_FRAMEWORK_BRANCH: ${{ steps.parse_gsy_framework_branch.outputs.PARSED_GSY_FRAMEWORK_BRANCH }}
         run: |
           echo "::set-output name=GSY_FRAMEWORK_BRANCH::${PARSED_GSY_FRAMEWORK_BRANCH:-master}"
         id: validated_gsy_framework_branch
