@@ -56,7 +56,8 @@ class RedisBaseMatcher(MatchingEngineMatcherClientInterface):
                 self.simulation_id).simulation_id_response: self._set_simulation_id
                })
         self._start_pubsub_thread()
-        self.redis_db.publish(MatchingEngineChannels.simulation_id, json.dumps({}))
+        self.redis_db.publish(
+            MatchingEngineChannels(self.simulation_id).simulation_id, json.dumps({}))
 
         if is_blocking:
             try:
@@ -68,7 +69,7 @@ class RedisBaseMatcher(MatchingEngineMatcherClientInterface):
         channel_subs = {
             MatchingEngineChannels(self.simulation_id).events: self._on_event_or_response,
             MatchingEngineChannels(self.simulation_id).response: self._on_event_or_response,
-            SimulationCommandChannels.response_channel(self.simulation_id, "area-map"):
+            SimulationCommandChannels(self.simulation_id).response_channel("area-map"):
                 self._on_area_map_response
         }
         self.pubsub.psubscribe(**channel_subs)
