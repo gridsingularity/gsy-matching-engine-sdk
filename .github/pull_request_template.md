@@ -10,5 +10,3 @@ Please describe what we want to achieve and why.
 **INTEGRATION_TESTS_BRANCH**=master
 <!--- If needed, choose which gsy-e branch should be used to build docker image to execute integration tests.-->
 **GSY_E_TARGET_BRANCH**=master
-<!--- If needed, choose which gsy-framework branch.-->
-**GSY_FRAMEWORK_BRANCH**=master
