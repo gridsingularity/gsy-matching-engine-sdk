@@ -5,3 +5,4 @@ coverage
 pre-commit
 pylint
 pytest-random-order
+flake8
